@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class AprilTagDriveSubsystem {
 
     // --- Tuning constants ---
-    private final double DESIRED_DISTANCE = 12.0;
+    private final double DESIRED_DISTANCE = 60.0; //1:1 (12 -> 15in, 48 -> 49in)
     private final double SPEED_GAIN  = 0.02;
     private final double STRAFE_GAIN = 0.015;
     private final double TURN_GAIN   = 0.01;
