@@ -2,15 +2,20 @@ package org.firstinspires.ftc.teamcode.TeleOP;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
+import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 
     private BasicMecanumDrive drive;
     private AprilTagDriveSubsystem aprilTagDrive;
+    Launcher launcher = new Launcher();
+    private Servo gate;
 
     @Override
     public void init() {
@@ -20,6 +25,12 @@ public class BasicTeleOp extends OpMode {
 
         // Init AprilTag Subsystem
         aprilTagDrive = new AprilTagDriveSubsystem(hardwareMap, telemetry);
+
+        // Init Launcher Subsystem
+        launcher.init(hardwareMap);
+        telemetry.addData("Status", "Initialized");
+
+        gate = hardwareMap.get(Servo.class, "gate");
 
     }
 
@@ -42,5 +53,30 @@ public class BasicTeleOp extends OpMode {
             drive.drive(y, x, rx);
 
         }
+
+        if (gamepad1.a) {
+
+            gate.setPosition(-0.4);
+
+        } else {
+
+            gate.setPosition(-0.5);
+
+        }
+
+        if (gamepad1.x) { //close
+
+            launcher.setFlywheelPower(0.55);
+
+        } else if (gamepad1.y) { //far
+
+            launcher.setFlywheelPower(1);
+
+        } else {
+
+            launcher.setFlywheelPower(0);
+
+        }
+
     }
 }
