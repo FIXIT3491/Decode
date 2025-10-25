@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOP;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
@@ -15,7 +17,7 @@ public class BasicTeleOp extends OpMode {
     private BasicMecanumDrive drive;
     private AprilTagDriveSubsystem aprilTagDrive;
     Launcher launcher = new Launcher();
-    private Servo gate;
+    private DcMotor intake;
 
     @Override
     public void init() {
@@ -30,7 +32,8 @@ public class BasicTeleOp extends OpMode {
         launcher.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
 
-        gate = hardwareMap.get(Servo.class, "gate");
+        // Init Intake
+        intake  = hardwareMap.get(DcMotor.class, "intake");
 
     }
 
@@ -38,9 +41,9 @@ public class BasicTeleOp extends OpMode {
     public void loop() {
 
         // Manual stick values
-        double y  = -gamepad1.left_stick_y / 2.0; // forward/back (reduced for smoother control) (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
-        double x  = gamepad1.left_stick_x / 2.0; // strafe
-        double rx = gamepad1.right_stick_x / 3.0; // rotate
+        double y  = -gamepad1.left_stick_y; // forward/back (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
+        double x  = gamepad1.left_stick_x; // strafe
+        double rx = gamepad1.right_stick_x; // rotate
 
         // If right bumper held → AprilTag auto mode
         if (gamepad1.right_bumper) {
@@ -49,32 +52,47 @@ public class BasicTeleOp extends OpMode {
 
         } else {
 
-            // Otherwise use manual mecanum subsystem
+            // Otherwise use manual mecanum subsystem (field centric)
             drive.drive(y, x, rx);
 
         }
 
-        if (gamepad1.a) {
+        // Reset IMU heading with back button
+        if (gamepad1.back) {
 
-            gate.setPosition(-0.4);
-
-        } else {
-
-            gate.setPosition(-0.5);
+            drive.resetHeading();
 
         }
 
-        if (gamepad1.x) { //close
+        if (gamepad2.x) { //close
 
             launcher.setFlywheelPower(0.55);
 
-        } else if (gamepad1.y) { //far
+        } else if (gamepad2.y) { //far
 
             launcher.setFlywheelPower(1);
 
         } else {
 
-            launcher.setFlywheelPower(0);
+            launcher.stop();
+
+        }
+
+        if (gamepad2.a) { //open if held
+
+            launcher.openGate();
+
+        } else { // close if released
+
+            launcher.closeGate();
+
+        }
+
+        intake.setPower(gamepad1.left_trigger);
+
+        if (gamepad1.left_bumper) {
+
+            intake.setPower(-0.75);
 
         }
 
