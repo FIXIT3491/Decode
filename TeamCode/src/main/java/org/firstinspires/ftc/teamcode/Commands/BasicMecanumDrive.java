@@ -40,14 +40,14 @@ public class BasicMecanumDrive {
         return heading - headingOffset;
     }
 
-    /** Resets the field-centric heading to the current IMU angle */
+    // Resets the field-centric heading to the current IMU angle
     public void resetHeading() {
         headingOffset = imu.getAngularOrientation(
                 AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS
         ).firstAngle;
     }
 
-    /** Field-centric drive method */
+    // Field-centric drive method
     public void drive(double y, double x, double rx) {
         // Get current heading
         double botHeading = getHeading();

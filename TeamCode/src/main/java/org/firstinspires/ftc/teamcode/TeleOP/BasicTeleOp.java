@@ -41,8 +41,8 @@ public class BasicTeleOp extends OpMode {
     public void loop() {
 
         // Manual stick values
-        double y  = -gamepad1.left_stick_y; // forward/back (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
-        double x  = gamepad1.left_stick_x; // strafe
+        double y = -gamepad1.left_stick_y; // forward/back (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
+        double x = gamepad1.left_stick_x; // strafe
         double rx = gamepad1.right_stick_x; // rotate
 
         // If right bumper held → AprilTag auto mode
@@ -64,15 +64,15 @@ public class BasicTeleOp extends OpMode {
 
         }
 
-        if (gamepad2.x) { //close
+        if (gamepad2.y) { //far
 
-            launcher.setFlywheelPower(0.55);
+            launcher.setFlywheelPower(0.965);
 
-        } else if (gamepad2.y) { //far
+        } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelPower(1);
+            launcher.setFlywheelPower(0.91);
 
-        } else {
+        }else {
 
             launcher.stop();
 
