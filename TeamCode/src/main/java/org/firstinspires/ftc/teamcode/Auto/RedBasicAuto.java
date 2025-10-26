@@ -35,9 +35,5 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(500);
         drive.drive(0,0,0);
 */
-        sleep(10000);
-        drive.drive(0.75,0,0);
-        sleep(450);
-        drive.drive(0,0,0);
     }
 }
