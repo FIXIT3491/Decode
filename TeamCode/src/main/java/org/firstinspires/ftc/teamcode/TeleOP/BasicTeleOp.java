@@ -66,11 +66,11 @@ public class BasicTeleOp extends OpMode {
 
         if (gamepad2.y) { //far
 
-            launcher.setFlywheelPower(0.965);
+            launcher.setFlywheelPower(0.90);
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelPower(0.91);
+            launcher.setFlywheelPower(0.77);
 
         }else {
 

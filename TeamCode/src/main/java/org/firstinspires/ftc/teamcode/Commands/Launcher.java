@@ -11,8 +11,8 @@ public class Launcher {
     private Servo gate;
 
     // Adjustable servo positions
-    private double gateClosedPos = 0.25;
-    private double gateOpenPos = -0.5;
+    private double gateClosedPos = 0.33;
+    private double gateOpenPos = 0.44;
 
     // Initialize motors
     public void init(HardwareMap hardwareMap) {
