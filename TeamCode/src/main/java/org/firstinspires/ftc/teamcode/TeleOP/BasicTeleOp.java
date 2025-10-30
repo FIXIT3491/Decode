@@ -48,7 +48,7 @@ public class BasicTeleOp extends OpMode {
         // If right bumper held → AprilTag auto mode
         if (gamepad1.right_bumper) {
 
-            aprilTagDrive.driveToTag(true, y, x, rx);
+            aprilTagDrive.driveToTag(true, y, x, rx, -1); // -1 is any tag
 
         } else {
 
@@ -66,11 +66,11 @@ public class BasicTeleOp extends OpMode {
 
         if (gamepad2.y) { //far
 
-            launcher.setFlywheelPower(0.90);
+            launcher.setFlywheelVelocity(2500);
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelPower(0.77);
+            launcher.setFlywheelVelocity(1350);
 
         }else {
 

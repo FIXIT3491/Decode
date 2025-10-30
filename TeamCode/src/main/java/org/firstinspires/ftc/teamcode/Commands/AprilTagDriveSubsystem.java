@@ -18,115 +18,54 @@ import java.util.concurrent.TimeUnit;
 
 public class AprilTagDriveSubsystem {
 
-    // --- Tuning constants ---
-    private final double DESIRED_DISTANCE = 60.0; //1:1 (12 -> 15in, 48 -> 49in)
-    private final double SPEED_GAIN  = 0.02;
-    private final double STRAFE_GAIN = 0.015;
-    private final double TURN_GAIN   = 0.01;
+    // --- Constants ---
+    private static final double DESIRED_DISTANCE = 60.0; // in inches
+    private static final double SPEED_GAIN  = 0.02;
+    private static final double STRAFE_GAIN = 0.015;
+    private static final double TURN_GAIN   = 0.01;
 
-    private final double MAX_AUTO_SPEED = 0.5;
-    private final double MAX_AUTO_STRAFE= 0.5;
-    private final double MAX_AUTO_TURN  = 0.3;
+    private static final double MAX_AUTO_SPEED  = 0.5;
+    private static final double MAX_AUTO_STRAFE = 0.5;
+    private static final double MAX_AUTO_TURN   = 0.3;
 
     // --- Hardware ---
-    private DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
+    private DcMotor frontLeft, frontRight, backLeft, backRight;
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
     private AprilTagDetection desiredTag = null;
 
     private final boolean USE_WEBCAM = true;
-    private final int DESIRED_TAG_ID = -1; // any tag
-    private final HardwareMap hardwareMap;
+    private final HardwareMap hwMap;
     private final Telemetry telemetry;
 
+    // Heading supplier for field-centric drive
+    private HeadingSupplier headingSupplier;
+
+    /** A functional interface for fetching heading from IMU or odometry **/
+    public interface HeadingSupplier {
+        double getHeadingRadians(); // must return radians
+    }
+
     public AprilTagDriveSubsystem(HardwareMap hw, Telemetry tel) {
-        this.hardwareMap = hw;
+        this.hwMap = hw;
         this.telemetry = tel;
-
-        // Init hardware
-        frontLeftDrive  = hw.get(DcMotor.class, "frontLeft");
-        frontRightDrive = hw.get(DcMotor.class, "frontRight");
-        backLeftDrive   = hw.get(DcMotor.class, "backLeft");
-        backRightDrive  = hw.get(DcMotor.class, "backRight");
-
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
-
+        initHardware();
         initAprilTag();
 
         if (USE_WEBCAM) setManualExposure(6, 250);
     }
 
-    // Called repeatedly in your OpMode loop
-    public void driveToTag(boolean autoEnabled, double manualDrive, double manualStrafe, double manualTurn) {
-        boolean targetFound = false;
-        double drive = 0, strafe = 0, turn = 0;
+    private void initHardware() {
+        frontLeft  = hwMap.get(DcMotor.class, "frontLeft");
+        frontRight = hwMap.get(DcMotor.class, "frontRight");
+        backLeft   = hwMap.get(DcMotor.class, "backLeft");
+        backRight  = hwMap.get(DcMotor.class, "backRight");
 
-        desiredTag = null;
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null &&
-                    ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID))) {
-                targetFound = true;
-                desiredTag = detection;
-                break;
-            }
-        }
-
-        if (targetFound) {
-            telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-            telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-            telemetry.addData("Bearing","%3.0f deg", desiredTag.ftcPose.bearing);
-            telemetry.addData("Yaw","%3.0f deg", desiredTag.ftcPose.yaw);
-        } else {
-            telemetry.addData("Status", "Searching for tag...");
-        }
-
-        if (autoEnabled && targetFound) {
-            double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-            double headingError = desiredTag.ftcPose.bearing;
-            double yawError     = desiredTag.ftcPose.yaw;
-
-            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("Mode", "AUTO");
-        } else {
-            drive  = manualDrive;
-            strafe = manualStrafe;
-            turn   = manualTurn;
-            telemetry.addData("Mode", "MANUAL");
-        }
-
-        telemetry.update();
-        moveRobot(drive, strafe, turn);
-    }
-
-    public void moveRobot(double x, double y, double yaw) {
-        double frontLeftPower    =  x - y - yaw;
-        double frontRightPower   =  x + y + yaw;
-        double backLeftPower     =  x + y - yaw;
-        double backRightPower    =  x - y + yaw;
-
-        double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
-        max = Math.max(max, Math.abs(backLeftPower));
-        max = Math.max(max, Math.abs(backRightPower));
-
-        if (max > 1.0) {
-            frontLeftPower /= max;
-            frontRightPower /= max;
-            backLeftPower /= max;
-            backRightPower /= max;
-        }
-
-        frontLeftDrive.setPower(frontLeftPower);
-        frontRightDrive.setPower(frontRightPower);
-        backLeftDrive.setPower(backLeftPower);
-        backRightDrive.setPower(backRightPower);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
     }
 
     private void initAprilTag() {
@@ -135,7 +74,7 @@ public class AprilTagDriveSubsystem {
 
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(hwMap.get(WebcamName.class, "Webcam 1"))
                     .addProcessor(aprilTag)
                     .build();
         } else {
@@ -146,6 +85,89 @@ public class AprilTagDriveSubsystem {
         }
     }
 
+    /** Supply an external heading source (IMU or OTOS) for field-centric driving */
+    public void setHeadingSupplier(HeadingSupplier supplier) {
+        this.headingSupplier = supplier;
+    }
+
+    /** Main update — can be used in TeleOp or Autonomous */
+    public void driveToTag(boolean autoEnabled, double manualDrive, double manualStrafe, double manualTurn, int tagNumber) {
+        boolean targetFound = false;
+        double drive = 0, strafe = 0, turn = 0;
+
+        desiredTag = null;
+        List<AprilTagDetection> detections = aprilTag.getDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null &&
+                    ((tagNumber < 0) || (detection.id == tagNumber))) {
+                targetFound = true;
+                desiredTag = detection;
+                break;
+            }
+        }
+
+        if (targetFound) {
+            double rangeError   = desiredTag.ftcPose.range - DESIRED_DISTANCE;
+            double headingError = desiredTag.ftcPose.bearing;
+            double yawError     = desiredTag.ftcPose.yaw;
+
+            if (autoEnabled) {
+                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            }
+
+            telemetry.addData("Tag", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+            telemetry.addData("Range", "%.1f in", desiredTag.ftcPose.range);
+        } else {
+            drive  = manualDrive;
+            strafe = manualStrafe;
+            turn   = manualTurn;
+            telemetry.addData("Status", "No tag detected");
+        }
+
+        telemetry.addData("Mode", autoEnabled && targetFound ? "AUTO" : "MANUAL");
+        telemetry.update();
+
+        moveRobotFieldCentric(drive, strafe, turn);
+    }
+
+    /** Field-centric drive transformation */
+    private void moveRobotFieldCentric(double forward, double strafe, double turn) {
+        double botHeading = 0;
+        if (headingSupplier != null) botHeading = headingSupplier.getHeadingRadians();
+
+        // Rotate input by negative heading
+        double rotX = strafe * Math.cos(-botHeading) - forward * Math.sin(-botHeading);
+        double rotY = strafe * Math.sin(-botHeading) + forward * Math.cos(-botHeading);
+
+        moveRobot(rotY, rotX, turn); // (y, x, turn)
+    }
+
+    /** Standard mecanum mixing */
+    private void moveRobot(double y, double x, double yaw) {
+        double frontLeftPower  = y + x + yaw;
+        double frontRightPower = y - x - yaw;
+        double backLeftPower   = y - x + yaw;
+        double backRightPower  = y + x - yaw;
+
+        double max = Math.max(Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
+                Math.max(Math.abs(backLeftPower), Math.abs(backRightPower)));
+
+        if (max > 1.0) {
+            frontLeftPower /= max;
+            frontRightPower /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
+        }
+
+        frontLeft.setPower(frontLeftPower);
+        frontRight.setPower(frontRightPower);
+        backLeft.setPower(backLeftPower);
+        backRight.setPower(backRightPower);
+    }
+
+    /** Manual exposure tweak for consistent lighting */
     private void setManualExposure(int exposureMS, int gain) {
         if (visionPortal == null) return;
 
@@ -159,7 +181,7 @@ public class AprilTagDriveSubsystem {
         if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
             exposureControl.setMode(ExposureControl.Mode.Manual);
         }
-        exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+        exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
 
         GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
         gainControl.setGain(gain);

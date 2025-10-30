@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Launcher {
 
-    private DcMotor leftFlywheel;
-    private DcMotor rightFlywheel;
+    private DcMotorEx leftFlywheel;
+    private DcMotorEx rightFlywheel;
     private Servo gate;
 
     // Adjustable servo positions
@@ -16,22 +17,22 @@ public class Launcher {
 
     // Initialize motors
     public void init(HardwareMap hardwareMap) {
-        leftFlywheel = hardwareMap.get(DcMotor.class, "flyLeft");
-        rightFlywheel = hardwareMap.get(DcMotor.class, "flyRight");
+        leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
+        rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
         gate = hardwareMap.get(Servo.class, "gate");
 
         // Make sure both spin in the same direction
-        leftFlywheel.setDirection(DcMotor.Direction.FORWARD);
-        rightFlywheel.setDirection(DcMotor.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Set gate to closed on init
         gate.setPosition(gateClosedPos);
     }
 
     // Spin both flywheels
-    public void setFlywheelPower(double power) {
-        leftFlywheel.setPower(power);
-        rightFlywheel.setPower(power);
+    public void setFlywheelVelocity(double angularRate) {
+        leftFlywheel.setVelocity(angularRate);
+        rightFlywheel.setVelocity(angularRate);
     }
 
     // Stop flywheels

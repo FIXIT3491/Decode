@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="FrontBlueAuto")
+@Autonomous(name="LeaveShort")
 public class LeaveShortAuto extends LinearOpMode {
 
     @Override
@@ -20,7 +20,7 @@ public class LeaveShortAuto extends LinearOpMode {
         launcher.init(hardwareMap);
 
         sleep(10000);
-        drive.drive(0.75,0,0);
+        drive.drive(0.7,0,0);
         sleep(450);
         drive.drive(0,0,0);
 

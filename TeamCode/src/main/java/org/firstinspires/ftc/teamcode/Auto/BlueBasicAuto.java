@@ -18,23 +18,23 @@ public class BlueBasicAuto extends LinearOpMode {
         waitForStart();
 
         launcher.init(hardwareMap);
-/*
-        sleep(7500);
-        drive.drive(0.8,0,0);
-        sleep(650);
-        drive.drive(0,0,0);
-        sleep(1);
-        launcher.setFlywheelPower(0.9);
+
+        sleep(2500);
+        drive.drive(0.5,0,0);
+        sleep(900);
+        drive.turnToHeading(-45, 0.25);
+        sleep(3000);
+        launcher.setFlywheelVelocity(1350);
         sleep(2500);
         launcher.openGate();
-        sleep(1000);
+        sleep(1500);
         launcher.stop();
         launcher.closeGate();
-        drive.drive(0,0,-0.25);
+        drive.turnToHeading(0,0.25);
         drive.drive(0.5,0,0);
         sleep(500);
         drive.drive(0,0,0);
-*/
+
 
     }
 }
