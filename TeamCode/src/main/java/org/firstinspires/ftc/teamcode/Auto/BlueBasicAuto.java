@@ -19,21 +19,42 @@ public class BlueBasicAuto extends LinearOpMode {
 
         launcher.init(hardwareMap);
 
-        sleep(2500);
-        drive.drive(0.5,0,0);
-        sleep(900);
-        drive.turnToHeading(-45, 0.25);
-        sleep(3000);
-        launcher.setFlywheelVelocity(1350);
-        sleep(2500);
-        launcher.openGate();
+        //move back and shoot
+        launcher.closeGate();
+        sleep(1000);
+        drive.drive(0.45,0,0);
+        sleep(1275);
+        drive.drive(0,0,0);
+        sleep(400);
+        launcher.setFlywheelVelocity(1800);
         sleep(1500);
+        launcher.openGate();
+        sleep(2500);
         launcher.stop();
         launcher.closeGate();
-        drive.turnToHeading(0,0.25);
+        sleep(1500);
+
+        //turn and sweep
+        drive.drive(-0.45,0,0);
+        sleep(1125);
+        drive.drive(0,0,0);
+        sleep(400);
+        drive.turnToHeading(35,0.45,0.24);
+        sleep(1000);
+        drive.resetHeading();
         drive.drive(0.5,0,0);
+        sleep(1400);
+        drive.drive(0,0,0);
+        sleep(400);
+
+        //turn and move back slightly
+        drive.turnToHeading(45,0.45,0.5);
+        sleep(1000);
+        drive.resetHeading();
+        drive.drive(-0.45,0,0);
         sleep(500);
         drive.drive(0,0,0);
+        sleep(400);
 
 
     }

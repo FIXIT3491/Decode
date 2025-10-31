@@ -60,41 +60,56 @@ public class BasicMecanumDrive {
 
     /**
      * Turns the robot to a specific heading (degrees) using the IMU.
-     * The robot automatically stops once it reaches the target.
+     * The robot stops once it reaches the target (within tolerance) or when timeout expires.
      *
-     * @param targetHeading The desired heading in degrees (-180 to 180)
-     * @param maxPower The maximum turning power (0.0–1.0)
+     * @param targetHeadingDeg Desired heading in degrees (-180 to 180)
+     * @param maxPower Maximum turning power (0.0–1.0)
+     * @param timeoutSec Maximum time to attempt the turn (seconds)
      */
-    public void turnToHeading(double targetHeading, double maxPower) { // FOR FUTURE -> MAKE IT DO A CONSTANT CHECK OF HEADING SO IT STOPS WHEN IT REACHES IT
-        double kP = 0.015; // proportional gain (adjust if needed)
-        double tolerance = 3.0; // acceptable error in degrees
-        double error = normalizeAngle((targetHeading - getHeading()));
+    public void turnToHeading(double targetHeadingDeg, double maxPower, double timeoutSec) {
+        double kP = 0.015;              // proportional gain (tweak if needed)
+        double toleranceDeg = 3.0;      // acceptable error in degrees
+        double minPower = 0.06;         // minimum power to overcome static friction
 
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = (long)(timeoutSec * 1000.0);
 
-        // Continue turning until within tolerance
-        while (Math.abs(error) > tolerance) {
-            error = normalizeAngle((targetHeading - getHeading()));
+        // compute initial error in degrees (use getHeadingDegrees() which returns degrees)
+        double error = normalizeAngle(targetHeadingDeg - getHeadingDegrees());
+
+        while (Math.abs(error) > toleranceDeg && (System.currentTimeMillis() - startTime) < timeoutMs) {
+            // recompute error
+            error = normalizeAngle(targetHeadingDeg - getHeadingDegrees());
+
+            // P control
             double turnPower = error * kP;
 
-
-            // Limit power to ±maxPower
+            // clamp to maxPower
             if (turnPower > maxPower) turnPower = maxPower;
             if (turnPower < -maxPower) turnPower = -maxPower;
 
+            // ensure a minimum magnitude so motors actually move (prevent stalling)
+            if (Math.abs(turnPower) < minPower) {
+                turnPower = Math.signum(turnPower) * minPower;
+            }
 
-            // Apply turning power
+            // apply turning power (positive => turn right)
             frontLeft.setPower(turnPower);
             backLeft.setPower(turnPower);
             frontRight.setPower(-turnPower);
             backRight.setPower(-turnPower);
+
+            // small sleep to let sensors update and to avoid hammering CPU
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
 
-
-        // Stop all motors when target reached
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        frontRight.setPower(0);
-        backRight.setPower(0);
+        // stop motors when done or timed out
+        stopMotors();
     }
 
 
