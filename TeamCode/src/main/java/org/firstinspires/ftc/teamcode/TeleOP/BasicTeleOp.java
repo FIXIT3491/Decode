@@ -45,6 +45,14 @@ public class BasicTeleOp extends OpMode {
         double x = gamepad1.left_stick_x; // strafe
         double rx = gamepad1.right_stick_x; // rotate
 
+        if (gamepad1.left_bumper) {
+
+            y = -gamepad1.left_stick_y / 2;
+            x = gamepad1.left_stick_x / 2;
+            rx = gamepad1.right_stick_x / 3;
+
+        }
+
         // If right bumper held → AprilTag auto mode
         if (gamepad1.right_bumper) {
 
