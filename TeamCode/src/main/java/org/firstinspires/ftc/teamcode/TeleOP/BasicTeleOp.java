@@ -45,7 +45,7 @@ public class BasicTeleOp extends OpMode {
         double x = gamepad1.left_stick_x; // strafe
         double rx = gamepad1.right_stick_x; // rotate
 
-        if (gamepad1.left_bumper) {
+        if (gamepad1.dpad_left) {
 
             y = -gamepad1.left_stick_y / 2;
             x = gamepad1.left_stick_x / 2;
