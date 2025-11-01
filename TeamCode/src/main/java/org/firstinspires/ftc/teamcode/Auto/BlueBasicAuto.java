@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="FrontBlueAuto")
+@Autonomous(group = "Front", name="FrontBlueAuto")
 public class BlueBasicAuto extends LinearOpMode {
 
     @Override

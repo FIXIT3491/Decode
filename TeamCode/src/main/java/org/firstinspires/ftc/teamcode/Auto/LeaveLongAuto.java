@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="LeaveLong")
+@Autonomous(group = "leave", name="LeaveLong")
 public class LeaveLongAuto extends LinearOpMode {
 
     @Override

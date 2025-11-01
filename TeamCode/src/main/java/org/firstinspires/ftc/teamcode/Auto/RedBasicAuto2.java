@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="BackRedAuto")
+@Autonomous(group = "Back", name="BackRedAuto")
 public class RedBasicAuto2 extends LinearOpMode {
 
     @Override
@@ -19,16 +19,24 @@ public class RedBasicAuto2 extends LinearOpMode {
 
         launcher.init(hardwareMap);
 
-        //drive forward to shooting zone and turn to shoot
+        //drive forward to shooting zone
         launcher.closeGate();
         sleep(1000);
         drive.drive(-0.45,0,0);
-        sleep(1200);
+        sleep(1575);
         drive.drive(0,0,0);
+        sleep(400);
+
+        //turn to shoot
         drive.turnToHeading(45,0.45, 0.25);
+        sleep(400);
         drive.resetHeading();
         sleep(400);
-        /*
+
+        //drive back ans shoot
+        drive.drive(0.2,0,0);
+        sleep(350);
+        drive.drive(0,0,0);
         launcher.setFlywheelVelocity(1800);
         sleep(1500);
         launcher.openGate();
@@ -54,11 +62,11 @@ public class RedBasicAuto2 extends LinearOpMode {
         drive.turnToHeading(45,0.45,0.5);
         sleep(1000);
         drive.resetHeading();
-        drive.drive(-0.45,0,0);
+        drive.drive(0.45,0,0);
         sleep(500);
         drive.drive(0,0,0);
         sleep(400);
-        */
+
 
     }
 }
