@@ -8,16 +8,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
-import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
+//import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 
     private BasicMecanumDrive drive;
-    private AprilTagDriveSubsystem aprilTagDrive;
+    //private AprilTagDriveSubsystem aprilTagDrive;
     Launcher launcher = new Launcher();
-    private DcMotor intake;
+    //private DcMotor intake;
 
     @Override
     public void init() {
@@ -26,14 +26,11 @@ public class BasicTeleOp extends OpMode {
         drive = new BasicMecanumDrive(hardwareMap);
 
         // Init AprilTag Subsystem
-        aprilTagDrive = new AprilTagDriveSubsystem(hardwareMap, telemetry);
+        //aprilTagDrive = new AprilTagDriveSubsystem(hardwareMap, telemetry);
 
         // Init Launcher Subsystem
         launcher.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
-
-        // Init Intake
-        intake  = hardwareMap.get(DcMotor.class, "intake");
 
     }
 
@@ -56,7 +53,7 @@ public class BasicTeleOp extends OpMode {
         // If right bumper held → AprilTag auto mode
         if (gamepad1.right_bumper) {
 
-            aprilTagDrive.driveToTag(true, y, x, rx, -1); // -1 is any tag
+            //aprilTagDrive.driveToTag(true, y, x, rx, -1); // -1 is any tag
 
         } else {
 
@@ -93,14 +90,6 @@ public class BasicTeleOp extends OpMode {
         } else { // close if released
 
             launcher.closeGate();
-
-        }
-
-        intake.setPower(gamepad1.left_trigger);
-
-        if (gamepad1.left_bumper) {
-
-            intake.setPower(-0.75);
 
         }
 

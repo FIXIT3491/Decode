@@ -33,7 +33,7 @@ public class BlueBasicAuto2 extends LinearOpMode {
         drive.resetHeading();
         sleep(400);
 
-        //drive back ans shoot
+        //drive back and shoot
         drive.drive(0.2,0,0);
         sleep(350);
         drive.drive(0,0,0);
