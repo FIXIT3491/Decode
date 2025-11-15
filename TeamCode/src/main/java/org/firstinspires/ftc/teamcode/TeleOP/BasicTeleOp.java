@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOP;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,6 +15,8 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 
+    private DcMotorEx leftFlywheel;
+    private DcMotorEx rightFlywheel;
     private BasicMecanumDrive drive;
     //private AprilTagDriveSubsystem aprilTagDrive;
     Launcher launcher = new Launcher();
@@ -31,6 +34,9 @@ public class BasicTeleOp extends OpMode {
         // Init Launcher Subsystem
         launcher.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
+
+        leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
+        rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
 
     }
 
@@ -71,11 +77,11 @@ public class BasicTeleOp extends OpMode {
 
         if (gamepad2.y) { //far
 
-            launcher.setFlywheelVelocity(2775);
+            launcher.setFlywheelRPM(1000);
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelVelocity(1800);
+            launcher.setFlywheelRPM(500);
 
         }else {
 
@@ -92,6 +98,9 @@ public class BasicTeleOp extends OpMode {
             launcher.closeGate();
 
         }
+        telemetry.addData("Velocity:", rightFlywheel.getVelocity());
+        telemetry.addData("Velocity:", rightFlywheel.getVelocity());
+        telemetry.update();
 
     }
 }

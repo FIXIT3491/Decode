@@ -12,45 +12,45 @@ public class Launcher {
     private Servo gate;
 
     // Adjustable servo positions
-    private double gateClosedPos = 0.5;
-    private double gateOpenPos = 0.18;
+    private double gateClosedPos = 0.57;
+    private double gateOpenPos = 0.28;
 
-    // Initialize motors
+    // REV Through-Bore Encoder → 28 ticks per revolution
+    private static final double TICKS_PER_REV = 28.0;
+
     public void init(HardwareMap hardwareMap) {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
         gate = hardwareMap.get(Servo.class, "gate");
 
-        // Make sure both spin in the same direction
-        leftFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotor.Direction.FORWARD);
+        rightFlywheel.setDirection(DcMotor.Direction.REVERSE);
 
-        // Set gate to closed on init
+        leftFlywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFlywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         gate.setPosition(gateClosedPos);
     }
 
-    // Spin both flywheels
-    public void setFlywheelVelocity(double angularRate) {
-        leftFlywheel.setVelocity(angularRate);
-        rightFlywheel.setVelocity(angularRate);
+    // Convert RPM → ticks/sec
+    public void setFlywheelRPM(double rpm) {
+        double ticksPerSecond = (rpm * TICKS_PER_REV) / 60.0;
+
+        leftFlywheel.setVelocity(ticksPerSecond);
+        rightFlywheel.setVelocity(ticksPerSecond);
     }
 
-    // Stop flywheels
     public void stop() {
-        leftFlywheel.setPower(0);
-        rightFlywheel.setPower(0);
+        leftFlywheel.setVelocity(0);
+        rightFlywheel.setVelocity(0);
     }
 
     // --- GATE METHODS ---
-
-    // Open gate
     public void openGate() {
         gate.setPosition(gateOpenPos);
     }
 
-    // Close gate
     public void closeGate() {
         gate.setPosition(gateClosedPos);
     }
-
 }
