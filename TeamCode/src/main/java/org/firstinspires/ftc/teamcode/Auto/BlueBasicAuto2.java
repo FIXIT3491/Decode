@@ -62,10 +62,6 @@ public class BlueBasicAuto2 extends LinearOpMode {
         drive.turnToHeading(-45,0.45,0.5);
         sleep(1000);
         drive.resetHeading();
-        drive.drive(0.45,0,0);
-        sleep(500);
-        drive.drive(0,0,0);
-        sleep(400);
 
     }
 }

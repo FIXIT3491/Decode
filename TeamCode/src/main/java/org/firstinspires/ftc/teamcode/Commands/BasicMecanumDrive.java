@@ -68,7 +68,7 @@ public class BasicMecanumDrive {
      */
     public void turnToHeading(double targetHeadingDeg, double maxPower, double timeoutSec) {
         double kP = 0.015;              // proportional gain (tweak if needed)
-        double toleranceDeg = 3.0;      // acceptable error in degrees
+        double toleranceDeg = 0.5;      // acceptable error in degrees
         double minPower = 0.06;         // minimum power to overcome static friction
 
         long startTime = System.currentTimeMillis();

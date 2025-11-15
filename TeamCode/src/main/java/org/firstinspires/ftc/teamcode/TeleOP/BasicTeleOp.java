@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 //import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
-@TeleOp(name = "BasicTeleOp")
+@TeleOp(name = "K-BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 
     private DcMotorEx leftFlywheel;
@@ -77,11 +77,11 @@ public class BasicTeleOp extends OpMode {
 
         if (gamepad2.y) { //far
 
-            launcher.setFlywheelRPM(1000);
+            launcher.setFlywheelRPM(0.85);
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelRPM(500);
+            launcher.setFlywheelRPM(0.25);
 
         }else {
 
@@ -98,9 +98,10 @@ public class BasicTeleOp extends OpMode {
             launcher.closeGate();
 
         }
+        /*
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
-        telemetry.update();
+        telemetry.update(); */
 
     }
 }

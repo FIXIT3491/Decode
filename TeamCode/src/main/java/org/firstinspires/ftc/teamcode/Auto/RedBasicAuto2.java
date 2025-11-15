@@ -21,7 +21,7 @@ public class RedBasicAuto2 extends LinearOpMode {
 
         //drive forward to shooting zone
         launcher.closeGate();
-        sleep(1000);
+        sleep(10000);
         drive.drive(-0.45,0,0);
         sleep(1575);
         drive.drive(0,0,0);
@@ -62,10 +62,6 @@ public class RedBasicAuto2 extends LinearOpMode {
         drive.turnToHeading(45,0.45,0.5);
         sleep(1000);
         drive.resetHeading();
-        drive.drive(0.45,0,0);
-        sleep(500);
-        drive.drive(0,0,0);
-        sleep(400);
 
 
     }
