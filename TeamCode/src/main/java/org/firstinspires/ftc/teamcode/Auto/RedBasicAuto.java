@@ -21,12 +21,13 @@ public class RedBasicAuto extends LinearOpMode {
 
         //move back and shoot
         launcher.closeGate();
+        drive.resetHeading();
         sleep(1000);
         drive.drive(0.45,0,0);
         sleep(1275);
-        drive.drive(0,0,0);
+        drive.stopMotors();
         sleep(400);
-        launcher.setFlywheelRPM(0.67);
+        launcher.setFlywheelRPM(0.70);
         sleep(1500);
         launcher.openGate();
         sleep(2500);
@@ -47,14 +48,11 @@ public class RedBasicAuto extends LinearOpMode {
         drive.drive(0,0,0);
         sleep(400);
 
-        //turn and move back slightly
+        //turn for heading
         drive.turnToHeading(-45,0.45,0.5);
         sleep(1000);
         drive.resetHeading();
-        drive.drive(-0.45,0,0);
-        sleep(500);
-        drive.drive(0,0,0);
-        sleep(400);
+
 
     }
 }

@@ -20,7 +20,7 @@ public class LeaveShortAuto extends LinearOpMode {
         launcher.init(hardwareMap);
 
         sleep(10000);
-        drive.drive(0.7,0,0);
+        drive.drive(0.44,0,0);
         sleep(450);
         drive.drive(0,0,0);
 

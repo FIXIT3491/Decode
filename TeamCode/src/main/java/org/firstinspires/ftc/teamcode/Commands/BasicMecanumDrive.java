@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Commands;
-//https://xbato.com/title/81287-kaiju-no-8-monster-8-official-simulpub/3490924-ch_129 lol
+//https://ato.to/chapter/1592700
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BasicMecanumDrive {
 
@@ -32,7 +34,7 @@ public class BasicMecanumDrive {
         imu.initialize(parameters);
     }
 
-    /** Returns the robot's current heading in radians (adjusted for offset) */
+    /* Returns the robot's current heading in radians (adjusted for offset) */
     public double getHeading() {
         double heading = imu.getAngularOrientation(
                 AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS
@@ -40,12 +42,12 @@ public class BasicMecanumDrive {
         return heading - headingOffset;
     }
 
-    /** Converts radians to degrees for convenience */
+    /* Converts radians to degrees for convenience */
     private double getHeadingDegrees() {
         return Math.toDegrees(getHeading());
     }
 
-    /** Resets the field-centric heading to the current IMU angle */
+    /* Resets the field-centric heading to the current IMU angle */
     public void resetHeading() {
         headingOffset = imu.getAngularOrientation(
                 AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS
@@ -58,7 +60,7 @@ public class BasicMecanumDrive {
         return angle;
     }
 
-    /**
+    /*
      * Turns the robot to a specific heading (degrees) using the IMU.
      * The robot stops once it reaches the target (within tolerance) or when timeout expires.
      *
@@ -112,8 +114,7 @@ public class BasicMecanumDrive {
         stopMotors();
     }
 
-
-    /** Field-centric drive control */
+    // Field-centric drive control
     public void drive(double y, double x, double rx) {
         double botHeading = getHeading();
 
@@ -142,12 +143,36 @@ public class BasicMecanumDrive {
         backRight.setPower(backRightPower);
     }
 
-    /** Stops all motors */
-    private void stopMotors() {
+    // Stops all motors
+    public void stopMotors() {
         frontLeft.setPower(0);
         backLeft.setPower(0);
         frontRight.setPower(0);
         backRight.setPower(0);
+    }
+
+    //Makes the motors brake
+    public void brake() {
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        frontRight.setPower(0);
+        backRight.setPower(0);
+
+    }
+
+    //Complementary to brake motors: reset them so our motor don't brake by nature
+    public void floatMotors() {
+
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
 }
