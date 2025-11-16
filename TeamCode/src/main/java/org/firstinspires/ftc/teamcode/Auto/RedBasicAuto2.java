@@ -37,7 +37,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         drive.drive(0.2,0,0);
         sleep(350);
         drive.drive(0,0,0);
-        launcher.setFlywheelRPM(1800);
+        launcher.setFlywheelRPM(0.67);
         sleep(1500);
         launcher.openGate();
         sleep(2500);
