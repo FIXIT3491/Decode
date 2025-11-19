@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN and TURN_GAIN constants.
  */
 
-@TeleOp(name="Omni Drive To AprilTag")
+@TeleOp(group = "Test", name="Omni Drive To AprilTag")
 public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 
-    private DcMotorEx leftFlywheel;
-    private DcMotorEx rightFlywheel;
+    //private DcMotorEx leftFlywheel;
+    //private DcMotorEx rightFlywheel;
     private BasicMecanumDrive drive;
     //private AprilTagDriveSubsystem aprilTagDrive;
     Launcher launcher = new Launcher();
@@ -35,8 +35,8 @@ public class BasicTeleOp extends OpMode {
         launcher.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
 
-        leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
-        rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
+        //leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
+        //rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
 
     }
 
