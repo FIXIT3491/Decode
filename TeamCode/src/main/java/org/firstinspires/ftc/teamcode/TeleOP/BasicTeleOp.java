@@ -77,11 +77,11 @@ public class BasicTeleOp extends OpMode {
 
         if (gamepad2.y) { //far
 
-            launcher.setFlywheelRPM(0.85);
+            launcher.setFlywheelRPM(3100); //0.85 power prev
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelRPM(0.67);
+            launcher.setFlywheelRPM(2300); //0.67 power prev
 
         }else {
 
@@ -98,6 +98,8 @@ public class BasicTeleOp extends OpMode {
             launcher.closeGate();
 
         }
+
+        launcher.updateFlywheels();
         /*
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
