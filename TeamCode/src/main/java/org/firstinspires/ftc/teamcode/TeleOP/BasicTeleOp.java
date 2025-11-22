@@ -100,7 +100,7 @@ public class BasicTeleOp extends OpMode {
         }
 
         launcher.updateFlywheels();
-        /*
+        /* Test later to see if telemetry works
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
         telemetry.addData("Velocity:", rightFlywheel.getVelocity());
         telemetry.update(); */

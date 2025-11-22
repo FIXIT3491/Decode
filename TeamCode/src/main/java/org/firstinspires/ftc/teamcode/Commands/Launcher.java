@@ -65,7 +65,7 @@ public class Launcher {
         // Convert motor velocity (ticks/sec) -> RPM
         double rpmLeft  = (leftFlywheel.getVelocity()  / TICKS_PER_REV) * 60.0;
         double rpmRight = (rightFlywheel.getVelocity() / TICKS_PER_REV) * 60.0;
-        double currentRPM = (rpmLeft + rpmRight) / 2.0;
+        double currentRPM = ((rpmLeft + rpmRight) / 2.0) + 50; //if things get out of hand, remove the +50
 
         // PID error
         double error = targetRPM - currentRPM;
