@@ -6,13 +6,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.teamcode.Commands.Launcher;
+
+//TODO: Integrate it into the launcher subsystem
+
 @TeleOp(group = "Test", name = "TransferMechanismTest")
 public class TransferMechanismTest extends OpMode {
 
-   // private DcMotor spin;
-  //  private Servo kick;
-    private CRServo intake;
-/*
+    private DcMotor spin;
+    private Servo kick;
+    //private CRServo intake;
+
     private int revolutionValue = 2790;
     private int segmentTicks = revolutionValue / 3;
 
@@ -21,23 +25,29 @@ public class TransferMechanismTest extends OpMode {
 
     private boolean aWasPressed = false;   // edge-trigger state
     private boolean busy = false;          // prevents double counts
-*/
+
+    Launcher launcher = new Launcher();
+
     @Override
     public void init() {
-       // spin = hardwareMap.get(DcMotor.class, "ferrisWheel");
-       // kick = hardwareMap.get(Servo.class, "kick");
-        intake = hardwareMap.get(CRServo.class, "intake");
-/*
+        spin = hardwareMap.get(DcMotor.class, "ferrisWheel");
+        kick = hardwareMap.get(Servo.class, "kick");
+        //intake = hardwareMap.get(CRServo.class, "intake");
+
         spin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         spin.setTargetPosition(0);
         spin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        spin.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
+        spin.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        launcher.init(hardwareMap);
+        telemetry.addData("Status", "Initialized");
+
     }
 
     @Override
     public void loop() {
-/*
+
         // --- EDGE TRIGGER DETECTION ---
         boolean aPressed = gamepad1.a && !aWasPressed; // true only once per press
         aWasPressed = gamepad1.a;
@@ -81,8 +91,8 @@ public class TransferMechanismTest extends OpMode {
             kick.setPosition(0);
 
         }
-*/
-        // intake
+
+        /*/ intake
         if (gamepad1.a) {
 
             intake.setPower(1);
@@ -100,12 +110,27 @@ public class TransferMechanismTest extends OpMode {
 
             intake.setPower(0);
 
+        }*/
+
+        if (gamepad1.right_bumper) { //far
+
+            launcher.setFlywheelRPM(3100); //0.85 power prev
+
+        } else if (gamepad1.left_bumper){ //close
+
+            launcher.setFlywheelRPM(2300); //0.67 power prev
+
+        } else { // stop
+
+            launcher.stop();
+
         }
-/*
+
+        launcher.updateFlywheels();
         telemetry.addData("Busy", busy);
         telemetry.addData("Segment", segmentCount + "/3");
         telemetry.addData("Target", currentTarget);
         telemetry.addData("Position", spin.getCurrentPosition());
-        telemetry.update(); */
+        telemetry.update();
     }
 }

@@ -11,11 +11,11 @@ public class Launcher {
 
     private DcMotorEx leftFlywheel;
     private DcMotorEx rightFlywheel;
-    private Servo gate;
+    //private Servo gate;
 
     // Adjustable servo positions
-    private double gateClosedPos = 0.57;
-    private double gateOpenPos = 0.28;
+    //private double gateClosedPos = 0.57;
+    //private double gateOpenPos = 0.28;
 
     // REV Through-Bore Encoder -> 28 ticks per revolution
     private static final double TICKS_PER_REV = 28.0;
@@ -37,7 +37,7 @@ public class Launcher {
     public void init(HardwareMap hardwareMap) {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
-        gate = hardwareMap.get(Servo.class, "gate");
+        //gate = hardwareMap.get(Servo.class, "gate");
 
         leftFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
         rightFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
@@ -45,7 +45,7 @@ public class Launcher {
         leftFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        gate.setPosition(gateClosedPos);
+        //gate.setPosition(gateClosedPos);
     }
 
     public void setFlywheelRPM(double rpm) {
@@ -85,8 +85,8 @@ public class Launcher {
         output = Math.max(0, Math.min(output, 1));
 
         // Apply power to both flywheels
-        leftFlywheel.setPower(output);
-        rightFlywheel.setPower(output);
+        leftFlywheel.setPower(-output); // set to negative but adjust accordingly
+        rightFlywheel.setPower(-output);// set to negative but adjust accordingly
     }
 
     public void stop() {
@@ -99,10 +99,11 @@ public class Launcher {
 
     // --- GATE METHODS ---
     public void openGate() {
-        gate.setPosition(gateOpenPos);
+        //gate.setPosition(gateOpenPos);
     }
 
     public void closeGate() {
-        gate.setPosition(gateClosedPos);
+        //gate.setPosition(gateClosedPos);
     }
+
 }
