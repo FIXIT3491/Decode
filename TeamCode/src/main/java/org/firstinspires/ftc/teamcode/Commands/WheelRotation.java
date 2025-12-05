@@ -1,0 +1,47 @@
+package org.firstinspires.ftc.teamcode.Commands;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+public class WheelRotation {
+
+    // Motor reference
+    private DcMotor ferrisMotor;
+
+    // Encoder constants
+    private static final double COUNTS_PER_REV = 537.6 * 3.75;              // goBILDA 60RPM 1:1
+    private static final double TICKS_PER_DEGREE = COUNTS_PER_REV / 360.0;
+
+    // Constructor
+    public WheelRotation() {}
+
+    public void init(HardwareMap hardwareMap) {
+        ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel");
+
+        ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ferrisMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void rotateToAngle(double targetDegrees, double power) {
+
+        int targetTicks = (int)(targetDegrees * TICKS_PER_DEGREE);
+
+        ferrisMotor.setTargetPosition(targetTicks);
+        ferrisMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ferrisMotor.setPower(power);
+
+        // Wait until movement finishes
+        while (ferrisMotor.isBusy()) {
+        }
+
+        ferrisMotor.setPower(0);
+        ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    // Get degrees for telemetry
+    public double getCurrentDegrees() {
+        return ferrisMotor.getCurrentPosition() / TICKS_PER_DEGREE;
+    }
+}

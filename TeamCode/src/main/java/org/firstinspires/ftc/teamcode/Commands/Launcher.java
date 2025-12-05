@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,13 +23,13 @@ public class Launcher {
 
     // Attempts to do set RPM for REV motors
     // PIDF constants (tune kP if needed)
-    private final double kP = 0.0007;
-    private final double kI = 0.0;
+    private final double kF = 0.0002;
+    private final double kP = 0.0004;
     private final double kD = 0.0001;
 
-    // Feedforward constant for 6000 RPM UltraPlanetary
-    private final double kF = 0.00018;
+    private final double kI = 0.0;
 
+    // Feedforward constant for 6000 RPM UltraPlanetary
     // Controller state
     private double targetRPM = 0;
     private double integral = 0;
@@ -39,8 +40,8 @@ public class Launcher {
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
         //gate = hardwareMap.get(Servo.class, "gate");
 
-        leftFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
 
         leftFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -62,32 +63,38 @@ public class Launcher {
 
     public void updateFlywheels() {
 
-        // Convert motor velocity (ticks/sec) -> RPM
         double rpmLeft  = (leftFlywheel.getVelocity()  / TICKS_PER_REV) * 60.0;
         double rpmRight = (rightFlywheel.getVelocity() / TICKS_PER_REV) * 60.0;
-        double currentRPM = ((rpmLeft + rpmRight) / 2.0) + 50; //if things get out of hand, remove the +50
+        double currentRPM = (rpmLeft + rpmRight) / 2.0;
 
-        // PID error
+        // Reset PID when flywheel is turned off
+        if (targetRPM == 0) {
+            integral = 0;
+            lastError = 0;
+        }
+
         double error = targetRPM - currentRPM;
 
-        // PID calculations
         integral += error;
+        integral = Math.max(-1500, Math.min(integral, 1500));  // anti-windup
+
         double derivative = error - lastError;
         lastError = error;
 
-        // PIDF output
-        double output = (kP * error)
+        double feedforward = kF * targetRPM;
+
+        double output = feedforward
+                + (kP * error)
                 + (kI * integral)
-                + (kD * derivative)
-                + (kF * targetRPM);
+                + (kD * derivative);
 
-        // Clamp to valid motor range
-        output = Math.max(0, Math.min(output, 1));
+        // allow braking
+        output = Math.max(-1, Math.min(output, 1));
 
-        // Apply power to both flywheels
-        leftFlywheel.setPower(-output); // set to negative but adjust accordingly
-        rightFlywheel.setPower(-output);// set to negative but adjust accordingly
+        leftFlywheel.setPower(output);
+        rightFlywheel.setPower(output);
     }
+
 
     public void stop() {
         //leftFlywheel.setVelocity(0);

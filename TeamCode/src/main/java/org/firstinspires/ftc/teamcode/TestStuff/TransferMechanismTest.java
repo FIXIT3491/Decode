@@ -7,84 +7,79 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
+import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
 //TODO: Integrate it into the launcher subsystem
 
 @TeleOp(group = "Test", name = "TransferMechanismTest")
 public class TransferMechanismTest extends OpMode {
 
-    private DcMotor spin;
     private Servo kick;
-    //private CRServo intake;
+    private DcMotor intake;
 
-    private int revolutionValue = 2790;
-    private int segmentTicks = revolutionValue / 3;
+    private double intakeCounter = 0;
+    private double outtakeCounter = 0;
 
-    private int segmentCount = 0;
-    private int currentTarget = 0;
+    boolean prevLeftBumper = false;
+    boolean prevRightBumper = false;
 
-    private boolean aWasPressed = false;   // edge-trigger state
-    private boolean busy = false;          // prevents double counts
 
     Launcher launcher = new Launcher();
+    private WheelRotation wheel = new WheelRotation();
+
 
     @Override
     public void init() {
-        spin = hardwareMap.get(DcMotor.class, "ferrisWheel");
         kick = hardwareMap.get(Servo.class, "kick");
-        //intake = hardwareMap.get(CRServo.class, "intake");
+        intake = hardwareMap.get(DcMotor.class, "intake");
 
-        spin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        spin.setTargetPosition(0);
-        spin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        spin.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        kick.setPosition(0);
 
         launcher.init(hardwareMap);
-        telemetry.addData("Status", "Initialized");
+        wheel.init(hardwareMap);
 
+        telemetry.addData("Status", "Initialized");
     }
 
     @Override
     public void loop() {
 
-        // --- EDGE TRIGGER DETECTION ---
-        boolean aPressed = gamepad1.a && !aWasPressed; // true only once per press
-        aWasPressed = gamepad1.a;
+        // Left bumper cycle
+        boolean leftBumperPressed = gamepad1.left_bumper;
 
-        // --- If A is pressed and the motor is NOT already moving ---
-        if (aPressed && !busy) {
+        if (leftBumperPressed && !prevLeftBumper) {     // rising edge
+            outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
 
-            busy = true;   // block further presses until done
-
-            segmentCount++;
-            currentTarget += segmentTicks;
-
-            // --- Full revolution: reset encoder ---
-            if (segmentCount > 3) {
-                spin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                currentTarget = 0;
-                spin.setTargetPosition(0);
-                spin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                segmentCount = 0;
+            switch((int)outtakeCounter) {
+                case 0: wheel.rotateToAngle(0, 1); break;
+                case 1: wheel.rotateToAngle(110, 1); break;
+                case 2: wheel.rotateToAngle(220, 1); break;
             }
 
-            spin.setTargetPosition(currentTarget);
-            spin.setPower(0.8);
         }
 
-        // --- Detect when the motor finishes reaching its target ---
-        if (busy) {
-            if (!spin.isBusy()) {
-                spin.setPower(0); // stop cleanly
-                busy = false;     // allow next button press
+        prevLeftBumper = leftBumperPressed;
+
+        // Right bumper cycle
+        boolean rightBumperPressed = gamepad1.right_bumper;
+
+        if (rightBumperPressed && !prevRightBumper) {   // rising edge
+            intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
+
+            switch((int)intakeCounter) {
+                case 0: wheel.rotateToAngle(60, 1); break;
+                case 1: wheel.rotateToAngle(170, 1); break;
+                case 2: wheel.rotateToAngle(280, 1); break;
             }
+
         }
 
-        // kick ball out otherwise if b otherwise stay at default position
+        prevRightBumper = rightBumperPressed;
+
+        // Ball kick
         if (gamepad1.b) {
 
-            kick.setPosition(0.15);
+            kick.setPosition(0.2);
 
         } else {
 
@@ -92,33 +87,24 @@ public class TransferMechanismTest extends OpMode {
 
         }
 
-        /*/ intake
-        if (gamepad1.a) {
+        //intake
+        if (gamepad1.right_trigger > 0) {
 
             intake.setPower(1);
 
-        }
-
-        //outtake
-        if (gamepad1.b) {
-
-            intake.setPower(-1);
-
-        }
-
-        if (gamepad1.x){
+        } else {
 
             intake.setPower(0);
 
-        }*/
+        }
 
-        if (gamepad1.right_bumper) { //far
+        if (gamepad1.y) { //far
 
             launcher.setFlywheelRPM(3100); //0.85 power prev
 
-        } else if (gamepad1.left_bumper){ //close
+        } else if (gamepad1.x){ //close
 
-            launcher.setFlywheelRPM(2300); //0.67 power prev
+            launcher.setFlywheelRPM(2350); //0.67 power prev
 
         } else { // stop
 
@@ -127,10 +113,8 @@ public class TransferMechanismTest extends OpMode {
         }
 
         launcher.updateFlywheels();
-        telemetry.addData("Busy", busy);
-        telemetry.addData("Segment", segmentCount + "/3");
-        telemetry.addData("Target", currentTarget);
-        telemetry.addData("Position", spin.getCurrentPosition());
+        telemetry.addData("Outtake Counter: ", outtakeCounter);
+        telemetry.addData("Intake Counter: ", intakeCounter);
         telemetry.update();
     }
 }
