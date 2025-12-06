@@ -136,7 +136,7 @@ public class RedBasicAuto extends LinearOpMode {
         drive.turnToHeading(45,0.45,0.5);
         sleep(100);
         drive.resetHeading();
-        drive.drive(-0.4,0,0);
+        drive.drive(0.4,0,0);
         sleep(750);
 
     }
