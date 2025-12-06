@@ -61,7 +61,7 @@ public class BasicMecanumDrive {
     }
 
     /*
-     * Turns the robot to a specific heading (degrees) using the IMU.
+     * Turns the robot to a specific heading (degrees) using the IMU. Only go to ~±45° for accuracy purposes
      * The robot stops once it reaches the target (within tolerance) or when timeout expires.
      *
      * @param targetHeadingDeg Desired heading in degrees (-180 to 180)
@@ -70,7 +70,7 @@ public class BasicMecanumDrive {
      */
     public void turnToHeading(double targetHeadingDeg, double maxPower, double timeoutSec) {
         double kP = 0.015;              // proportional gain (tweak if needed)
-        double toleranceDeg = 0.5;      // acceptable error in degrees
+        double toleranceDeg = 1.5;      // acceptable error in degrees
         double minPower = 0.06;         // minimum power to overcome static friction
 
         long startTime = System.currentTimeMillis();

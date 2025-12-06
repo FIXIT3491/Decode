@@ -20,7 +20,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         launcher.init(hardwareMap);
 
         //drive forward to shooting zone
-        launcher.closeGate();
+        //launcher.closeGate();
         sleep(10000);
         drive.drive(-0.45,0,0);
         sleep(1575);
@@ -37,12 +37,12 @@ public class RedBasicAuto2 extends LinearOpMode {
         drive.drive(0.2,0,0);
         sleep(350);
         drive.drive(0,0,0);
-        launcher.setFlywheelRPM(0.67);
+        //launcher.setFlywheelRPM(0.67);
         sleep(1500);
-        launcher.openGate();
+        //launcher.openGate();
         sleep(2500);
-        launcher.stop();
-        launcher.closeGate();
+        //launcher.stop();
+        //launcher.closeGate();
         sleep(1500);
 
         //turn and sweep

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 //import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
+import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
@@ -21,6 +22,13 @@ public class BasicTeleOp extends OpMode {
     //private AprilTagDriveSubsystem aprilTagDrive;
     Launcher launcher = new Launcher();
     //private DcMotor intake;
+    private WheelRotation wheel = new WheelRotation();
+
+    private double intakeCounter = 0;
+    private double outtakeCounter = 0;
+    private DcMotor intake;
+    boolean prevLeftBumper = false;
+    boolean prevRightBumper = false;
 
     @Override
     public void init() {
@@ -38,6 +46,11 @@ public class BasicTeleOp extends OpMode {
         //leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
         //rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
 
+        intake = hardwareMap.get(DcMotor.class, "intake");
+
+        wheel.init(hardwareMap);
+
+        launcher.kickBack();
     }
 
     @Override
@@ -75,35 +88,70 @@ public class BasicTeleOp extends OpMode {
 
         }
 
+        // Left bumper cycle
+        boolean leftBumperPressed = gamepad1.left_bumper;
+
+        if (leftBumperPressed && !prevLeftBumper) {     // rising edge
+            outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
+
+            switch((int)outtakeCounter) {
+                case 0: wheel.rotateToAngle(0, 1); break;
+                case 1: wheel.rotateToAngle(110, 1); break;
+                case 2: wheel.rotateToAngle(220, 1); break;
+            }
+
+        }
+
+        prevLeftBumper = leftBumperPressed;
+
+        // Right bumper cycle
+        boolean rightBumperPressed = gamepad1.right_bumper;
+
+        if (rightBumperPressed && !prevRightBumper) {   // rising edge
+            intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
+
+            switch((int)intakeCounter) {
+                case 0: wheel.rotateToAngle(60, 1); break;
+                case 1: wheel.rotateToAngle(170, 1); break;
+                case 2: wheel.rotateToAngle(280, 1); break;
+            }
+
+        }
+
+        prevRightBumper = rightBumperPressed;
+
         if (gamepad2.y) { //far
 
             launcher.setFlywheelRPM(3100); //0.85 power prev
 
         } else if (gamepad2.x){ //close
 
-            launcher.setFlywheelRPM(2300); //0.67 power prev
+            launcher.setFlywheelRPM(2400); //0.67 power prev
 
-        }else {
+        } else {
 
             launcher.stop();
 
         }
 
-        if (gamepad2.a) { //open if held
+        if (gamepad2.b) { //open if held
 
-            launcher.openGate();
+            launcher.kick();
 
         } else { // close if released
 
-            launcher.closeGate();
+            launcher.kickBack();
 
         }
 
+        //intake
+        intake.setPower(gamepad2.right_trigger);
+        intake.setPower(-gamepad2.left_trigger);
+
         launcher.updateFlywheels();
-        /* Test later to see if telemetry works
-        telemetry.addData("Velocity:", rightFlywheel.getVelocity());
-        telemetry.addData("Velocity:", rightFlywheel.getVelocity());
-        telemetry.update(); */
+        telemetry.addData("Outtake Counter: ", outtakeCounter);
+        telemetry.addData("Intake Counter: ", intakeCounter);
+        telemetry.update();
 
     }
 }

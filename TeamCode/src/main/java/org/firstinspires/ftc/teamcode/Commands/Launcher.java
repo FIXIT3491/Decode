@@ -13,10 +13,11 @@ public class Launcher {
     private DcMotorEx leftFlywheel;
     private DcMotorEx rightFlywheel;
     //private Servo gate;
+    private Servo kick;
 
     // Adjustable servo positions
-    //private double gateClosedPos = 0.57;
-    //private double gateOpenPos = 0.28;
+    private double kickBackPos = 0;
+    private double kickFrontPos = 0.2;
 
     // REV Through-Bore Encoder -> 28 ticks per revolution
     private static final double TICKS_PER_REV = 28.0;
@@ -38,7 +39,7 @@ public class Launcher {
     public void init(HardwareMap hardwareMap) {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
-        //gate = hardwareMap.get(Servo.class, "gate");
+        kick = hardwareMap.get(Servo.class, "kick");
 
         leftFlywheel.setDirection(DcMotorEx.Direction.REVERSE);
         rightFlywheel.setDirection(DcMotorEx.Direction.FORWARD);
@@ -46,7 +47,14 @@ public class Launcher {
         leftFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFlywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        //gate.setPosition(gateClosedPos);
+        kick.setPosition(kickBackPos);
+    }
+
+    public void setFlywheelPower (double power){
+
+        leftFlywheel.setPower(power);
+        rightFlywheel.setPower(power);
+
     }
 
     public void setFlywheelRPM(double rpm) {
@@ -104,13 +112,13 @@ public class Launcher {
         rightFlywheel.setPower(0);
     }
 
-    // --- GATE METHODS ---
-    public void openGate() {
-        //gate.setPosition(gateOpenPos);
+    // --- KICK METHODS ---
+    public void kick() {
+        kick.setPosition(kickFrontPos);
     }
 
-    public void closeGate() {
-        //gate.setPosition(gateClosedPos);
+    public void kickBack() {
+        kick.setPosition(kickBackPos);
     }
 
 }

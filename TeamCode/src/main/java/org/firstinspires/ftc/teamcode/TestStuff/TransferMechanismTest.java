@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -23,10 +24,8 @@ public class TransferMechanismTest extends OpMode {
     boolean prevLeftBumper = false;
     boolean prevRightBumper = false;
 
-
     Launcher launcher = new Launcher();
     private WheelRotation wheel = new WheelRotation();
-
 
     @Override
     public void init() {
@@ -88,16 +87,10 @@ public class TransferMechanismTest extends OpMode {
         }
 
         //intake
-        if (gamepad1.right_trigger > 0) {
+        intake.setPower(gamepad1.right_trigger);
+        intake.setPower(-gamepad1.left_trigger);
 
-            intake.setPower(1);
-
-        } else {
-
-            intake.setPower(0);
-
-        }
-
+        //flywheel
         if (gamepad1.y) { //far
 
             launcher.setFlywheelRPM(3100); //0.85 power prev
@@ -117,4 +110,5 @@ public class TransferMechanismTest extends OpMode {
         telemetry.addData("Intake Counter: ", intakeCounter);
         telemetry.update();
     }
+
 }
