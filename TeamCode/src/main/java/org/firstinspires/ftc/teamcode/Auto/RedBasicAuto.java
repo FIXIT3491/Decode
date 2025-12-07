@@ -63,15 +63,15 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(250);
 
         //turn
-        drive.turnToHeading(-45,0.45,0.5);
+        drive.turnToHeading(45,0.45,0.5);
         sleep(250);
-        drive.turnToHeading(-45,0.45, 0.5);
+        drive.turnToHeading(45,0.45, 0.5);
         sleep(250);
         drive.resetHeading();
 
         //intake - 1
         drive.drive(0.2,0,0);
-        intake.setPower(1);
+        intake.setPower(-1);
         sleep(1225);
         drive.drive(0,0,0);
         sleep(800);
@@ -93,16 +93,16 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(800);
         wheel.rotateToAngle(0, 0.8);
         sleep(500);
-        intake.setPower(-1);
+        intake.setPower(1);
         sleep(500);
         intake.setPower(0);
 
         //aim back
         drive.drive(-0.3,0,0);
         sleep(1375);
-        drive.turnToHeading(45,0.45,0.5);
+        drive.turnToHeading(-45,0.45,0.5);
         sleep(250);
-        drive.turnToHeading(45,0.45,0.5);
+        drive.turnToHeading(-45,0.45,0.5);
         sleep(250);
 
         //shoot pt 2
@@ -132,12 +132,12 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(300);
         wheel.rotateToAngle(60, 0.8);
 
-        //turn and move back
+        /*turn and move back
         drive.turnToHeading(45,0.45,0.5);
         sleep(100);
         drive.resetHeading();
         drive.drive(0.4,0,0);
-        sleep(750);
+        sleep(750);*/
 
     }
 }

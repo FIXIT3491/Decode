@@ -45,4 +45,9 @@ public class WheelRotation {
     public double getCurrentDegrees() {
         return ferrisMotor.getCurrentPosition() / TICKS_PER_DEGREE;
     }
+
+    public void adjustWheel (int modifier) {
+        rotateToAngle((getCurrentDegrees() + (5 * modifier)), 0.8);
+    }
+
 }

@@ -26,9 +26,12 @@ public class BasicTeleOp extends OpMode {
 
     private double intakeCounter = 0;
     private double outtakeCounter = 0;
+    private int offset = 0;
     private DcMotor intake;
     boolean prevLeftBumper = false;
     boolean prevRightBumper = false;
+    boolean prevA = false;
+    boolean prevB = false;
 
     @Override
     public void init() {
@@ -95,9 +98,9 @@ public class BasicTeleOp extends OpMode {
             outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)outtakeCounter) {
-                case 0: wheel.rotateToAngle(0, 1); break;
-                case 1: wheel.rotateToAngle(110, 1); break;
-                case 2: wheel.rotateToAngle(220, 1); break;
+                case 0: wheel.rotateToAngle(0, 0.8); break;
+                case 1: wheel.rotateToAngle(110, 0.8); break;
+                case 2: wheel.rotateToAngle(220, 0.8); break;
             }
 
         }
@@ -111,14 +114,25 @@ public class BasicTeleOp extends OpMode {
             intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)intakeCounter) {
-                case 0: wheel.rotateToAngle(60, 1); break;
-                case 1: wheel.rotateToAngle(170, 1); break;
-                case 2: wheel.rotateToAngle(280, 1); break;
+                case 0: wheel.rotateToAngle(60, 0.8); break;
+                case 1: wheel.rotateToAngle(170, 0.8); break;
+                case 2: wheel.rotateToAngle(280, 0.8); break;
             }
 
         }
 
         prevRightBumper = rightBumperPressed;
+
+        //adjustment for ferris wheel
+        if (gamepad1.a) {
+
+            wheel.adjustWheel(1);
+
+        } else if (gamepad1.b) {
+
+            wheel.adjustWheel(-1);
+
+        }
 
         if (gamepad2.y) { //far
 
@@ -151,6 +165,7 @@ public class BasicTeleOp extends OpMode {
         launcher.updateFlywheels();
         telemetry.addData("Outtake Counter: ", outtakeCounter);
         telemetry.addData("Intake Counter: ", intakeCounter);
+        telemetry.addData("Current Degree: ", wheel.getCurrentDegrees());
         telemetry.update();
 
     }

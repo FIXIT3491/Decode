@@ -23,9 +23,11 @@ public class BasicMecanumDrive {
         backLeft   = hardwareMap.get(DcMotor.class, "backLeft");
         backRight  = hardwareMap.get(DcMotor.class, "backRight");
 
-        // Reverse left side
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
 
         // Initialize IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -117,6 +119,9 @@ public class BasicMecanumDrive {
     // Field-centric drive control
     public void drive(double y, double x, double rx) {
         double botHeading = getHeading();
+        y = -y;
+        x = -x; //change is all movements are reversed
+        rx = -rx;
 
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
