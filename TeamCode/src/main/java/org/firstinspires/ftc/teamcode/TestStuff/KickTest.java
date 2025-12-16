@@ -2,27 +2,25 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.Commands.Launcher;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(group = "Test", name = "Kick Test")
 public class KickTest extends OpMode {
 
-    Launcher launcher = new Launcher();
+    private Servo kick;
 
     @Override
     public void init() {
-        launcher.init(hardwareMap);
-        launcher.kickBack();
+        kick = hardwareMap.get(Servo.class, "kick");
     }
 
     @Override
     public void loop() {
 
        if (gamepad1.a) {
-           launcher.kick();
+           kick.setPosition(0.3);
        } else {
-           launcher.kickBack();
+           kick.setPosition(0);
        }
 
     }
