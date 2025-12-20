@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 public class TransferMechanismTest extends OpMode {
 
     private Servo kick;
-    private DcMotor intake;
+    //private DcMotor intake;
 
     private double intakeCounter = 0;
     private double outtakeCounter = 0;
@@ -24,17 +24,17 @@ public class TransferMechanismTest extends OpMode {
     boolean prevLeftBumper = false;
     boolean prevRightBumper = false;
 
-    Launcher launcher = new Launcher();
+    //Launcher launcher = new Launcher();
     private WheelRotation wheel = new WheelRotation();
 
     @Override
     public void init() {
         kick = hardwareMap.get(Servo.class, "kick");
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        //intake = hardwareMap.get(DcMotor.class, "intake");
 
         kick.setPosition(0);
 
-        launcher.init(hardwareMap);
+        //launcher.init(hardwareMap);
         wheel.init(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
@@ -50,9 +50,9 @@ public class TransferMechanismTest extends OpMode {
             outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)outtakeCounter) {
-                case 0: wheel.rotateToAngle(0, 1); break;
-                case 1: wheel.rotateToAngle(110, 1); break;
-                case 2: wheel.rotateToAngle(220, 1); break;
+                case 0: wheel.rotateToAngle(0, 0.1); break;
+                case 1: wheel.rotateToAngle(110, 0.1); break;
+                case 2: wheel.rotateToAngle(220, 0.1); break;
             }
 
         }
@@ -66,9 +66,9 @@ public class TransferMechanismTest extends OpMode {
             intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)intakeCounter) {
-                case 0: wheel.rotateToAngle(60, 1); break;
-                case 1: wheel.rotateToAngle(170, 1); break;
-                case 2: wheel.rotateToAngle(280, 1); break;
+                case 0: wheel.rotateToAngle(60, 0.1); break;
+                case 1: wheel.rotateToAngle(170, 0.1); break;
+                case 2: wheel.rotateToAngle(280, 0.1); break;
             }
 
         }
@@ -86,26 +86,26 @@ public class TransferMechanismTest extends OpMode {
 
         }
 
-        //intake
+        /*/intake
         intake.setPower(gamepad1.right_trigger);
         intake.setPower(-gamepad1.left_trigger);
 
-        //flywheel
+        *///flywheel
         if (gamepad1.y) { //far
 
-            launcher.setFlywheelRPM(3100); //0.85 power prev
+            //launcher.setFlywheelRPM(3100); //0.85 power prev
 
         } else if (gamepad1.x){ //close
 
-            launcher.setFlywheelRPM(2350); //0.67 power prev
+           // launcher.setFlywheelRPM(2350); //0.67 power prev
 
         } else { // stop
 
-            launcher.stop();
+           // launcher.stop();
 
         }
 
-        launcher.updateFlywheels();
+       // launcher.updateFlywheels();
         telemetry.addData("Outtake Counter: ", outtakeCounter);
         telemetry.addData("Intake Counter: ", intakeCounter);
         telemetry.update();

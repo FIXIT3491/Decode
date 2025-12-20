@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+@TeleOp (name = "Color Sensor Test", group = "SensorTests")
 public class ColorSensorTest extends OpMode {
 
     // Declare the ColorSensor object
