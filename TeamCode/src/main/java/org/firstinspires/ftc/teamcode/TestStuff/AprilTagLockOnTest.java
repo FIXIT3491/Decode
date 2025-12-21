@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TestStuff;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @TeleOp(name = "AprilTag Lock-On Test", group = "Test")
+@Disabled
 public class AprilTagLockOnTest extends LinearOpMode {
 
     private VisionPortal visionPortal;

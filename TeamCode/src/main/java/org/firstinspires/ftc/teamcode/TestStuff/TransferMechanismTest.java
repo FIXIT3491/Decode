@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 public class TransferMechanismTest extends OpMode {
 
     private Servo kick;
+
+
     //private DcMotor intake;
 
     private double intakeCounter = 0;
@@ -50,9 +52,9 @@ public class TransferMechanismTest extends OpMode {
             outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)outtakeCounter) {
-                case 0: wheel.rotateToAngle(0, 0.1); break;
-                case 1: wheel.rotateToAngle(110, 0.1); break;
-                case 2: wheel.rotateToAngle(220, 0.1); break;
+                case 0: wheel.rotateToAngle(0, 0.7); break;
+                case 1: wheel.rotateToAngle(110, 0.7); break;
+                case 2: wheel.rotateToAngle(220, 0.7); break;
             }
 
         }
@@ -66,9 +68,9 @@ public class TransferMechanismTest extends OpMode {
             intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)intakeCounter) {
-                case 0: wheel.rotateToAngle(60, 0.1); break;
-                case 1: wheel.rotateToAngle(170, 0.1); break;
-                case 2: wheel.rotateToAngle(280, 0.1); break;
+                case 0: wheel.rotateToAngle(60, 0.7); break;
+                case 1: wheel.rotateToAngle(170, 0.7); break;
+                case 2: wheel.rotateToAngle(280, 0.7); break;
             }
 
         }
