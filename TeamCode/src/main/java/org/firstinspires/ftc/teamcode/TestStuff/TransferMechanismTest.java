@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
@@ -17,8 +18,10 @@ public class TransferMechanismTest extends OpMode {
 
     private Servo kick;
 
+    private TouchSensor touchSensor;
 
     //private DcMotor intake;
+    private DcMotor ferrisMotor;
 
     private double intakeCounter = 0;
     private double outtakeCounter = 0;
@@ -32,12 +35,15 @@ public class TransferMechanismTest extends OpMode {
     @Override
     public void init() {
         kick = hardwareMap.get(Servo.class, "kick");
+        ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel"); //motor teeth: 9 | spindex teeth: 14
+        touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
         //intake = hardwareMap.get(DcMotor.class, "intake");
 
         kick.setPosition(0);
 
         //launcher.init(hardwareMap);
         wheel.init(hardwareMap);
+
 
         telemetry.addData("Status", "Initialized");
     }
@@ -80,7 +86,7 @@ public class TransferMechanismTest extends OpMode {
         // Ball kick
         if (gamepad1.b) {
 
-            kick.setPosition(0.2);
+            kick.setPosition(0.25);
 
         } else {
 
@@ -108,6 +114,19 @@ public class TransferMechanismTest extends OpMode {
         }
 
        // launcher.updateFlywheels();
+
+
+        if (touchSensor.isPressed()) {
+            // Reset the motor encoder values to zero
+            ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            ferrisMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            telemetry.addData("Touch Sensor: ", "Pressed");
+        } else {
+            telemetry.addData("Touch Sensor: ", "Not Pressed");
+        }
+
+        telemetry.addData("Ticks: ", ferrisMotor.getCurrentPosition());
         telemetry.addData("Outtake Counter: ", outtakeCounter);
         telemetry.addData("Intake Counter: ", intakeCounter);
         telemetry.update();

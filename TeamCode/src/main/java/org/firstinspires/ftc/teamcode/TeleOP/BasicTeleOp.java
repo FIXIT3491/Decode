@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 //import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
@@ -28,6 +29,8 @@ public class BasicTeleOp extends OpMode {
     private double outtakeCounter = 0;
     private int offset = 0;
     private DcMotor intake;
+    private DcMotor ferrisMotor;
+    private TouchSensor touchSensor;
     boolean prevLeftBumper = false;
     boolean prevRightBumper = false;
     boolean prevA = false;
@@ -50,6 +53,8 @@ public class BasicTeleOp extends OpMode {
         //rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
+        ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel");
+        touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
 
         wheel.init(hardwareMap);
 
@@ -163,6 +168,17 @@ public class BasicTeleOp extends OpMode {
         intake.setPower(-gamepad2.left_trigger);
 
         launcher.updateFlywheels();
+        /*
+        if (touchSensor.isPressed()) {
+            // Reset the motor encoder values to zero
+            ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); unless you change the way it spins dont involve this
+            ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            ferrisMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            telemetry.addData("Touch Sensor: ", "Pressed");
+        } else {
+            telemetry.addData("Touch Sensor: ", "Not Pressed");
+        }*/
+
         telemetry.addData("Outtake Counter: ", outtakeCounter);
         telemetry.addData("Intake Counter: ", intakeCounter);
         telemetry.addData("Current Degree: ", wheel.getCurrentDegrees());

@@ -11,8 +11,10 @@ public class WheelRotation {
     private DcMotor ferrisMotor;
 
     // Encoder constants
-    private static final double COUNTS_PER_REV = 537.6 * 3.75;              // goBILDA 60RPM 1:1
+    private static final double COUNTS_PER_REV = 537.6 * 3.75;  // goBILDA 60RPM 1:1
     private static final double TICKS_PER_DEGREE = COUNTS_PER_REV / 360.0;
+    private static final double GEAR_RATIO = 9.0 / 14.0; // driver gear / driven gear
+    private static double TUNER = 1.0; // tune encase its slightly off
 
     // Constructor
     public WheelRotation() {}
@@ -27,7 +29,7 @@ public class WheelRotation {
 
     public void rotateToAngle(double targetDegrees, double power) {
 
-        int targetTicks = (int)(targetDegrees * TICKS_PER_DEGREE);
+        int targetTicks = (int)(targetDegrees * TICKS_PER_DEGREE * GEAR_RATIO * TUNER);
 
         ferrisMotor.setTargetPosition(targetTicks);
         ferrisMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
