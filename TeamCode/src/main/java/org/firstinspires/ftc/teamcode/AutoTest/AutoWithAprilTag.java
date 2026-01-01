@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.AutoTest;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -17,22 +16,34 @@ public class AutoWithAprilTag extends LinearOpMode {
 
         tagScanner.init(hardwareMap);
 
-        while (!isStarted() && !isStopRequested()) {
+        waitForStart();
+
+        sleep(1000);
+        //Actions to read obelisk
+
+        //scan obelisk
+        while (AprilTagGlobals.detectedTagID == -1) {
             tagScanner.scan();
             telemetry.addData("Detected Tag", AprilTagGlobals.detectedTagID);
             telemetry.update();
         }
 
-        waitForStart();
+        sleep(500);
 
-        if (AprilTagGlobals.detectedTagID == 1) {
+        //Auto based on obelisk
+        if (AprilTagGlobals.detectedTagID == 21) { //GPP
             // auto 1
-        } else if (AprilTagGlobals.detectedTagID == 2) {
+            telemetry.addData("Auto 1", null );
+        } else if (AprilTagGlobals.detectedTagID == 22) { //PGP
             // auto 2
-        } else if (AprilTagGlobals.detectedTagID == 3) {
+            telemetry.addData("Auto 2", null );
+        } else if (AprilTagGlobals.detectedTagID == 23) { //PPG
             // auto 3
+            telemetry.addData("Auto 3", null );
         }
 
         tagScanner.stop();
+
+        telemetry.addData("Tag ID: ", AprilTagGlobals.detectedTagID);
     }
 }

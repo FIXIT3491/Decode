@@ -29,7 +29,7 @@ public class WheelRotation {
 
     public void rotateToAngle(double targetDegrees, double power) {
 
-        int targetTicks = (int)(targetDegrees * TICKS_PER_DEGREE * GEAR_RATIO * TUNER);
+        int targetTicks = (int)(((targetDegrees * TICKS_PER_DEGREE) * GEAR_RATIO) * TUNER);
 
         ferrisMotor.setTargetPosition(targetTicks);
         ferrisMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
