@@ -12,15 +12,16 @@ public class KickTest extends OpMode {
     @Override
     public void init() {
         kick = hardwareMap.get(Servo.class, "kick");
+        kick.setDirection(Servo.Direction.FORWARD);
     }
 
     @Override
     public void loop() {
 
        if (gamepad1.a) {
-           kick.setPosition(0.3);
+           kick.setPosition(0.5);
        } else {
-           kick.setPosition(0);
+           kick.setPosition(0.3);
        }
 
     }
