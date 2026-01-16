@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
-//TODO: Integrate it into the launcher subsystem
-
 @TeleOp(group = "Test", name = "TransferMechanismTest")
 public class TransferMechanismTest extends OpMode {
 
@@ -34,12 +32,12 @@ public class TransferMechanismTest extends OpMode {
 
     @Override
     public void init() {
-        kick = hardwareMap.get(Servo.class, "kick");
+        //kick = hardwareMap.get(Servo.class, "kick");
         ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel"); //motor teeth: 9 | spindex teeth: 14
-        touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
+        //touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
         //intake = hardwareMap.get(DcMotor.class, "intake");
 
-        kick.setPosition(0);
+        //kick.setPosition(0);
 
         //launcher.init(hardwareMap);
         wheel.init(hardwareMap);
@@ -86,11 +84,11 @@ public class TransferMechanismTest extends OpMode {
         // Ball kick
         if (gamepad1.b) {
 
-            kick.setPosition(0.25);
+           // kick.setPosition(0.25);
 
         } else {
 
-            kick.setPosition(0);
+            //kick.setPosition(0);
 
         }
 
@@ -115,7 +113,7 @@ public class TransferMechanismTest extends OpMode {
 
        // launcher.updateFlywheels();
 
-
+/*
         if (touchSensor.isPressed()) {
             // Reset the motor encoder values to zero
             ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -129,7 +127,7 @@ public class TransferMechanismTest extends OpMode {
         telemetry.addData("Ticks: ", ferrisMotor.getCurrentPosition());
         telemetry.addData("Outtake Counter: ", outtakeCounter);
         telemetry.addData("Intake Counter: ", intakeCounter);
-        telemetry.update();
+        telemetry.update(); */
     }
 
 }
