@@ -2,13 +2,16 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 @TeleOp(group = "Test", name = "Flywheel Increase")
 public class Flywheel_Incremental_Increase extends OpMode {
 
-    double power = 0.5;
+    double rpm = 2100;
+
+    private DcMotorEx flywheel;
 
     Launcher launcher = new Launcher();
 
@@ -25,32 +28,33 @@ public class Flywheel_Incremental_Increase extends OpMode {
     @Override
     public void init() {
         launcher.init(hardwareMap);
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
     }
 
     @Override
     public void loop() {
 
-        // decrease 0.01
+        // decrease 50
         if (gamepad1.dpad_left && !prevDpadLeft) {
-            power -= 0.01;
+            rpm -= 50;
         }
         prevDpadLeft = gamepad1.dpad_left;
 
-        // increase 0.01
+        // increase 50
         if (gamepad1.dpad_right && !prevDpadRight) {
-            power += 0.01;
+            rpm += 50;
         }
         prevDpadRight = gamepad1.dpad_right;
 
-        // increase 0.1
+        // increase 500
         if (gamepad1.right_bumper && !prevRB) {
-            power += 0.1;
+            rpm += 500;
         }
         prevRB = gamepad1.right_bumper;
 
-        // decrease 0.1
+        // decrease 500
         if (gamepad1.left_bumper && !prevLB) {
-            power -= 0.1;
+            rpm -= 500;
         }
         prevLB = gamepad1.left_bumper;
 
@@ -62,12 +66,14 @@ public class Flywheel_Incremental_Increase extends OpMode {
 
         // Flywheel control based on toggle
         if (flywheelOn) {
-            launcher.setFlywheelRPM(power);
+            launcher.setFlywheelRPM(rpm);
         } else {
             launcher.stop();
         }
 
-        telemetry.addData("Flywheel Power:", power);
+        launcher.updateFlywheel();
+        telemetry.addData("Flywheel Target RPM:", rpm);
+        telemetry.addData("Actual RPM: ", flywheel.getVelocity());
         telemetry.addData("Flywheel On:", flywheelOn);
         telemetry.update();
     }

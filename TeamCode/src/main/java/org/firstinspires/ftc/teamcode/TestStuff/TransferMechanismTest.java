@@ -56,9 +56,9 @@ public class TransferMechanismTest extends OpMode {
             outtakeCounter = (outtakeCounter + 1) % 3;  // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)outtakeCounter) {
-                case 0: wheel.rotateToAngle(0, 0.7); break;
-                case 1: wheel.rotateToAngle(110, 0.7); break;
-                case 2: wheel.rotateToAngle(220, 0.7); break;
+                case 0: wheel.rotateToAngle(0, 0.4); break;
+                case 1: wheel.rotateToAngle(110, 0.4); break;
+                case 2: wheel.rotateToAngle(220, 0.4); break;
             }
 
         }
@@ -72,9 +72,9 @@ public class TransferMechanismTest extends OpMode {
             intakeCounter = (intakeCounter + 1) % 3;    // cycle 0 -> 1 -> 2 -> 0
 
             switch((int)intakeCounter) {
-                case 0: wheel.rotateToAngle(60, 0.7); break;
-                case 1: wheel.rotateToAngle(170, 0.7); break;
-                case 2: wheel.rotateToAngle(280, 0.7); break;
+                case 0: wheel.rotateToAngle(60, 0.4); break;
+                case 1: wheel.rotateToAngle(170, 0.4); break;
+                case 2: wheel.rotateToAngle(280, 0.4); break;
             }
 
         }

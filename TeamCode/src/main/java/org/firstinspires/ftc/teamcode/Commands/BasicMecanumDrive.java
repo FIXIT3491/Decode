@@ -13,7 +13,7 @@ public class BasicMecanumDrive {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;
     private BNO055IMU imu;
-
+    private static final double IMU_YAW_OFFSET = Math.PI / 2; // 90 degrees
     private double headingOffset = 0; // For field-centric reset
 
     public BasicMecanumDrive(HardwareMap hardwareMap) {
@@ -38,10 +38,16 @@ public class BasicMecanumDrive {
 
     /* Returns the robot's current heading in radians (adjusted for offset) */
     public double getHeading() {
-        double heading = imu.getAngularOrientation(
-                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS
+        double imuHeading = imu.getAngularOrientation(
+                AxesReference.INTRINSIC,
+                AxesOrder.ZYX,
+                AngleUnit.RADIANS
         ).firstAngle;
-        return heading - headingOffset;
+
+        // Correct for IMU mounted on right side facing inward
+        double correctedHeading = imuHeading - IMU_YAW_OFFSET;
+
+        return correctedHeading - headingOffset;
     }
 
     /* Converts radians to degrees for convenience */
@@ -51,9 +57,13 @@ public class BasicMecanumDrive {
 
     /* Resets the field-centric heading to the current IMU angle */
     public void resetHeading() {
-        headingOffset = imu.getAngularOrientation(
-                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS
+        double imuHeading = imu.getAngularOrientation(
+                AxesReference.INTRINSIC,
+                AxesOrder.ZYX,
+                AngleUnit.RADIANS
         ).firstAngle;
+
+        headingOffset = imuHeading - IMU_YAW_OFFSET;
     }
 
     private double normalizeAngle(double angle) {
@@ -179,9 +189,5 @@ public class BasicMecanumDrive {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
     }
-
-    /// ----------------- PATHING STUFF ----------------- ///
-
-
 
 }

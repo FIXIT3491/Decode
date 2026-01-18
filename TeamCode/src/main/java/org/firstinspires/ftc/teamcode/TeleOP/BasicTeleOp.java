@@ -167,7 +167,7 @@ public class BasicTeleOp extends OpMode {
         intake.setPower(gamepad2.right_trigger);
         intake.setPower(-gamepad2.left_trigger);
 
-        launcher.updateFlywheels();
+        launcher.updateFlywheel();
         /*
         if (touchSensor.isPressed()) {
             // Reset the motor encoder values to zero
