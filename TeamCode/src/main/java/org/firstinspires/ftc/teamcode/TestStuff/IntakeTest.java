@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 @TeleOp(name = "Intake Test", group = "Test")
 public class IntakeTest extends OpMode {
 
-    //private DcMotorEx leftFlywheel;
-    //private DcMotorEx rightFlywheel;
     private BasicMecanumDrive drive;
 
     private DcMotor intake;
@@ -34,8 +32,8 @@ public class IntakeTest extends OpMode {
 
         drive.drive(y, x, rx);
 
-        intake.setPower(-gamepad1.right_trigger);
-        intake.setPower(gamepad1.left_trigger);
+        if (gamepad1.right_trigger > 0){intake.setPower(1);}
+        if (gamepad1.left_trigger > 0){intake.setPower(-1);}
 
     }
 }

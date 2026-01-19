@@ -14,7 +14,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @TeleOp(name = "AprilTag Lock-On Test", group = "Test")
-@Disabled
 public class AprilTagLockOnTest extends LinearOpMode {
 
     private VisionPortal visionPortal;
@@ -27,10 +26,10 @@ public class AprilTagLockOnTest extends LinearOpMode {
      */
 
     // Proportional gain
-    private static final double kP = 0.004;
+    private static final double kP = 0.006;
 
     // Motor output limits
-    private static final double MAX_POWER = 0.4;
+    private static final double MAX_POWER = 0.7;
 
     // Deadzone in pixels (prevents jitter)
     private static final double PIXEL_DEADBAND = 10;
@@ -77,7 +76,7 @@ public class AprilTagLockOnTest extends LinearOpMode {
 
                 motorPower = Range.clip(motorPower, -MAX_POWER, MAX_POWER);
 
-                turretMotor.setPower(motorPower);
+                turretMotor.setPower(-motorPower);
 
                 telemetry.addData("Tag ID", tag.id);
                 telemetry.addData("Tag X", tagX);
