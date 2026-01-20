@@ -68,7 +68,7 @@ public class Flywheel_Incremental_Increase extends OpMode {
         if (flywheelOn) {
             launcher.setFlywheelRPM(rpm);
         } else {
-            launcher.stop();
+            launcher.stopFlywheel();
         }
 
         launcher.updateFlywheel();

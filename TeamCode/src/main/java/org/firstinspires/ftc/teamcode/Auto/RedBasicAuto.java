@@ -36,7 +36,7 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(400);
 
         //shoot and score - 1
-        launcher.setFlywheelPower(0.45);
+       // launcher.setFlywheelPower(0.45);
         sleep(500);
         launcher.kick();
         sleep(300);
@@ -57,7 +57,7 @@ public class RedBasicAuto extends LinearOpMode {
         launcher.kick();
         sleep(300);
         launcher.kickBack();
-        launcher.stop();
+       // launcher.stop();
         sleep(50);
         wheel.rotateToAngle(60, 0.8);
         sleep(250);
@@ -107,7 +107,7 @@ public class RedBasicAuto extends LinearOpMode {
 
         //shoot pt 2
         //shoot and score - 1
-        launcher.setFlywheelPower(0.45);
+      //  launcher.setFlywheelPower(0.45);
         sleep(500);
         launcher.kick();
         sleep(300);
@@ -128,7 +128,7 @@ public class RedBasicAuto extends LinearOpMode {
         launcher.kick();
         sleep(500);
         launcher.kickBack();
-        launcher.stop();
+       // launcher.stop();
         sleep(300);
         wheel.rotateToAngle(60, 0.8);
 

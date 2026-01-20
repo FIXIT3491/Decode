@@ -77,17 +77,7 @@ public class BasicTeleOp extends OpMode {
 
         }
 
-        // If right bumper held → AprilTag auto mode
-        if (gamepad1.right_bumper) {
-
-            //aprilTagDrive.driveToTag(true, y, x, rx, -1); // -1 is any tag
-
-        } else {
-
-            // Otherwise use manual mecanum subsystem (field centric)
             drive.drive(y, x, rx);
-
-        }
 
         // Reset IMU heading with back button
         if (gamepad1.back) {
@@ -128,7 +118,7 @@ public class BasicTeleOp extends OpMode {
 
         prevRightBumper = rightBumperPressed;
 
-        //adjustment for ferris wheel
+        /*adjustment for ferris wheel
         if (gamepad1.a) {
 
             wheel.adjustWheel(1);
@@ -137,7 +127,7 @@ public class BasicTeleOp extends OpMode {
 
             wheel.adjustWheel(-1);
 
-        }
+        } */
 
         if (gamepad2.y) { //far
 
@@ -149,7 +139,7 @@ public class BasicTeleOp extends OpMode {
 
         } else {
 
-            launcher.stop();
+           launcher.stopFlywheel();
 
         }
 
