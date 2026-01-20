@@ -33,7 +33,8 @@ public class IntakeTest extends OpMode {
         drive.drive(y, x, rx);
 
         if (gamepad1.right_trigger > 0){intake.setPower(1);}
-        if (gamepad1.left_trigger > 0){intake.setPower(-1);}
+        else if (gamepad1.left_trigger > 0){intake.setPower(-1);}
+        else {intake.setPower(0);}
 
     }
 }
