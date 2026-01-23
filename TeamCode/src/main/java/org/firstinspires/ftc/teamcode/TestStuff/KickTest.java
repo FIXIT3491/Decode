@@ -3,26 +3,62 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(group = "Test", name = "Kick Test")
 public class KickTest extends OpMode {
 
     private Servo kick;
+    private Servo kick2;
+
+    private ElapsedTime timer = new ElapsedTime();
+    private int state = 0;
+
+    private boolean lastA = false;
+
+    // positions (adjust as needed)
+    private final double KICK_UP = 0.6;
+    private final double KICK_DOWN = 0.3;
+    private final double KICK2_UP = 1;
+    private final double KICK2_DOWN = 0.5;
 
     @Override
     public void init() {
         kick = hardwareMap.get(Servo.class, "kick");
-        kick.setDirection(Servo.Direction.FORWARD);
+        kick2 = hardwareMap.get(Servo.class, "kick2");
+        kick2.setDirection(Servo.Direction.REVERSE);
+
+        kick.setPosition(KICK_DOWN);
+        kick2.setPosition(KICK2_DOWN);
     }
 
     @Override
     public void loop() {
 
-       if (gamepad1.a) {
-           kick.setPosition(0.5);
-       } else {
-           kick.setPosition(0.3);
-       }
+        boolean aPressed = gamepad1.a;
 
+        // Rising-edge detection (debounce)
+        if (aPressed && !lastA && state == 0) {
+            kick.setPosition(KICK_UP);
+            timer.reset();
+            state = 1;
+        }
+
+        // After 0.5s, spin kick2 up
+        if (state == 1 && timer.seconds() > 0.5) {
+            kick2.setPosition(KICK2_UP);
+            timer.reset();
+            state = 2;
+        }
+
+        // After another 0.5s, return both
+        if (state == 2 && timer.seconds() > 0.5) {
+            kick.setPosition(KICK_DOWN);
+            kick2.setPosition(KICK2_DOWN);
+            state = 0;
+        }
+
+        // Save button state for next loop
+        lastA = aPressed;
     }
 }
