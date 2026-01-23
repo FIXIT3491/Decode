@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 @TeleOp(group = "Test", name = "Kick Test")
 public class KickTest extends OpMode {
@@ -22,10 +25,14 @@ public class KickTest extends OpMode {
     private final double KICK2_UP = 1;
     private final double KICK2_DOWN = 0.5;
 
+    private DcMotorEx flywheel;
+
     @Override
     public void init() {
         kick = hardwareMap.get(Servo.class, "kick");
         kick2 = hardwareMap.get(Servo.class, "kick2");
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         kick2.setDirection(Servo.Direction.REVERSE);
 
         kick.setPosition(KICK_DOWN);
@@ -52,7 +59,7 @@ public class KickTest extends OpMode {
         }
 
         // After another 0.5s, return both
-        if (state == 2 && timer.seconds() > 0.5) {
+        if (state == 2 && timer.seconds() > 1.5) {
             kick.setPosition(KICK_DOWN);
             kick2.setPosition(KICK2_DOWN);
             state = 0;
@@ -60,5 +67,16 @@ public class KickTest extends OpMode {
 
         // Save button state for next loop
         lastA = aPressed;
+
+        if (gamepad1.right_trigger > 0) {
+
+            flywheel.setPower(1);
+
+        } else {
+
+            flywheel.setPower(0);
+
+        }
+
     }
 }
