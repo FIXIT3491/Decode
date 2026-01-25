@@ -27,7 +27,7 @@ public class BlueBasicAuto extends LinearOpMode {
         wheel.init(hardwareMap);
 
         //move back and shoot
-        launcher.kickBack();
+        //launcher.kickBack();
         drive.resetHeading();
         sleep(100);
         drive.drive(0.3,0,0);
@@ -38,25 +38,25 @@ public class BlueBasicAuto extends LinearOpMode {
         //shoot and score - 1
        // launcher.setFlywheelPower(0.45);
         sleep(500);
-        launcher.kick();
+        //launcher.kick();
         sleep(300);
-        launcher.kickBack();
+        //launcher.kickBack();
         sleep(500);
 
         //cycle
         wheel.rotateToAngle(110, 0.8);
         sleep(500);
-        launcher.kick();
+        //launcher.kick();
         sleep(300);
-        launcher.kickBack();
+        //launcher.kickBack();
         sleep(500);
 
         //cycle
         wheel.rotateToAngle(220, 0.8);
         sleep(500);
-        launcher.kick();
+       // launcher.kick();
         sleep(300);
-        launcher.kickBack();
+        //launcher.kickBack();
        // launcher.stop();
         sleep(50);
         wheel.rotateToAngle(60, 0.8);
@@ -109,25 +109,25 @@ public class BlueBasicAuto extends LinearOpMode {
         //shoot and score - 1
        // launcher.setFlywheelPower(0.45);
         sleep(500);
-        launcher.kick();
+        //launcher.kick();
         sleep(300);
-        launcher.kickBack();
+        //launcher.kickBack();
         sleep(500);
 
         //cycle
         wheel.rotateToAngle(110, 0.8);
         sleep(500);
-        launcher.kick();
+        //launcher.kick();
         sleep(300);
-        launcher.kickBack();
+       // launcher.kickBack();
         sleep(500);
 
         //cycle
         wheel.rotateToAngle(220, 0.8);
         sleep(500);
-        launcher.kick();
+        //launcher.kick();
         sleep(500);
-        launcher.kickBack();
+       // launcher.kickBack();
         //launcher.stop();
         sleep(300);
         wheel.rotateToAngle(60, 0.8);

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "IndividualWheelTest", group = "Test")
-@Disabled
+
 public class IndividualWheelTest extends OpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;
@@ -33,7 +33,7 @@ public class IndividualWheelTest extends OpMode {
 
         if (gamepad1.a) {
 
-            frontLeft.setPower(1);
+            frontLeft.setPower(-1);
 
         } else if (gamepad1.b) {
 
@@ -41,11 +41,11 @@ public class IndividualWheelTest extends OpMode {
 
         } else if (gamepad1.x) {
 
-            backLeft.setPower(1);
+            backLeft.setPower(-1);
 
         } else if (gamepad1.y) {
 
-            backRight.setPower(1);
+            backRight.setPower(-1);
 
         } else {
 

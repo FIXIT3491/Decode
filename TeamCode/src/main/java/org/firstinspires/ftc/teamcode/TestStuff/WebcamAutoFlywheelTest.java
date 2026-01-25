@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "AprilTag Flywheel TeleOp")
+@TeleOp(name = "AprilTag Flywheel TeleOp", group = "Test")
 public class WebcamAutoFlywheelTest extends LinearOpMode {
 
     Launcher launcher = new Launcher();
@@ -36,10 +36,7 @@ public class WebcamAutoFlywheelTest extends LinearOpMode {
             launcher.updateFlywheelFromAprilTag();
             launcher.updateFlywheel();
 
-        if (gamepad1.a) launcher.kick();
-            else launcher.kickBack();
+            launcher.closeVision();
         }
-
-        launcher.closeVision();
     }
 }

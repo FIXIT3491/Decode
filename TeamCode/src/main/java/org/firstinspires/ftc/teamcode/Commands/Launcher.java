@@ -46,10 +46,6 @@ public class Launcher {
     private static final double TURRET_KP = 0.01;
     private static final double TURRET_MAX_POWER = 0.4;
 
-    // Kicker positions
-    private final double kickBackPos = 0.0;
-    private final double kickFrontPos = 0.2;
-
     // Flywheel PIDF
     private final double kF = 0.0002;
     private final double kP = 0.0004;
@@ -74,16 +70,13 @@ public class Launcher {
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
         turret.setDirection(DcMotorEx.Direction.REVERSE);
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         turretZeroTicks = 0;
-
-        kick = hardwareMap.get(Servo.class, "kick");
-        kick.setPosition(kickBackPos);
 
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(
@@ -201,16 +194,6 @@ public class Launcher {
 
         lastError = error;
         flywheel.setPower(Range.clip(output, -1, 1));
-    }
-
-    /* ===================== KICKER ===================== */
-
-    public void kick() {
-        kick.setPosition(kickFrontPos);
-    }
-
-    public void kickBack() {
-        kick.setPosition(kickBackPos);
     }
 
     /* ===================== HELPERS ===================== */

@@ -2,21 +2,24 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-
-import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class BasicMecanumDrive {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;
     private BNO055IMU imu;
-    private static final double IMU_YAW_OFFSET = Math.PI / 2; // 90 degrees
-    private double headingOffset = 0; // For field-centric reset
+
+    // Used to zero field-centric heading
+    private double headingOffset = 0.0;
 
     public BasicMecanumDrive(HardwareMap hardwareMap) {
+
         // Initialize motors
         frontLeft  = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
@@ -25,95 +28,94 @@ public class BasicMecanumDrive {
 
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         backLeft.setDirection(DcMotor.Direction.FORWARD);
-
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
         // Initialize IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
     }
 
-    /* Returns the robot's current heading in radians (adjusted for offset) */
+    /**
+     * Returns robot heading in RADIANS.
+     * 0 rad = field forward.
+     */
     public double getHeading() {
-        double imuHeading = imu.getAngularOrientation(
+        Orientation orientation = imu.getAngularOrientation(
                 AxesReference.INTRINSIC,
                 AxesOrder.ZYX,
                 AngleUnit.RADIANS
-        ).firstAngle;
+        );
 
-        // Correct for IMU mounted on right side facing inward
-        double correctedHeading = imuHeading - IMU_YAW_OFFSET;
+        double rawHeading = orientation.firstAngle;
 
-        return correctedHeading - headingOffset;
+        // Apply hub mounting correction + field reset offset
+        return (rawHeading) - headingOffset;
     }
 
-    /* Converts radians to degrees for convenience */
-    private double getHeadingDegrees() {
+    /**
+     * Returns robot heading in DEGREES.
+     */
+    public double getHeadingDegrees() {
         return Math.toDegrees(getHeading());
     }
 
-    /* Resets the field-centric heading to the current IMU angle */
+    /**
+     * Resets field-centric forward to current robot direction.
+     */
     public void resetHeading() {
-        double imuHeading = imu.getAngularOrientation(
+        Orientation orientation = imu.getAngularOrientation(
                 AxesReference.INTRINSIC,
                 AxesOrder.ZYX,
                 AngleUnit.RADIANS
-        ).firstAngle;
+        );
 
-        headingOffset = imuHeading - IMU_YAW_OFFSET;
+        headingOffset = orientation.firstAngle;
     }
 
-    private double normalizeAngle(double angle) {
-        while (angle > 180) angle -= 360;
-        while (angle <= -180) angle += 360;
-        return angle;
+    /**
+     * Normalize angle to [-180, 180) degrees
+     */
+    private double normalizeAngle(double angleDeg) {
+        while (angleDeg > 180) angleDeg -= 360;
+        while (angleDeg <= -180) angleDeg += 360;
+        return angleDeg;
     }
 
-    /*
-     * Turns the robot to a specific heading (degrees) using the IMU. Only go to ~±45° for accuracy purposes
-     * The robot stops once it reaches the target (within tolerance) or when timeout expires.
-     *
-     * @param targetHeadingDeg Desired heading in degrees (-180 to 180)
-     * @param maxPower Maximum turning power (0.0–1.0)
-     * @param timeoutSec Maximum time to attempt the turn (seconds)
+    /**
+     * Turn robot to a specific heading using P control.
      */
     public void turnToHeading(double targetHeadingDeg, double maxPower, double timeoutSec) {
-        double kP = 0.015;              // proportional gain (tweak if needed)
-        double toleranceDeg = 1.5;      // acceptable error in degrees
-        double minPower = 0.06;         // minimum power to overcome static friction
+
+        double kP = 0.015;
+        double toleranceDeg = 1.5;
+        double minPower = 0.06;
 
         long startTime = System.currentTimeMillis();
-        long timeoutMs = (long)(timeoutSec * 1000.0);
+        long timeoutMs = (long) (timeoutSec * 1000);
 
-        // compute initial error in degrees (use getHeadingDegrees() which returns degrees)
         double error = normalizeAngle(targetHeadingDeg - getHeadingDegrees());
 
-        while (Math.abs(error) > toleranceDeg && (System.currentTimeMillis() - startTime) < timeoutMs) {
-            // recompute error
+        while (Math.abs(error) > toleranceDeg &&
+                (System.currentTimeMillis() - startTime) < timeoutMs) {
+
             error = normalizeAngle(targetHeadingDeg - getHeadingDegrees());
 
-            // P control
             double turnPower = error * kP;
+            turnPower = Math.max(-maxPower, Math.min(maxPower, turnPower));
 
-            // clamp to maxPower
-            if (turnPower > maxPower) turnPower = maxPower;
-            if (turnPower < -maxPower) turnPower = -maxPower;
-
-            // ensure a minimum magnitude so motors actually move (prevent stalling)
             if (Math.abs(turnPower) < minPower) {
                 turnPower = Math.signum(turnPower) * minPower;
             }
 
-            // apply turning power (positive => turn right)
             frontLeft.setPower(turnPower);
             backLeft.setPower(turnPower);
             frontRight.setPower(-turnPower);
             backRight.setPower(-turnPower);
 
-            // small sleep to let sensors update and to avoid hammering CPU
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -122,35 +124,30 @@ public class BasicMecanumDrive {
             }
         }
 
-        // stop motors when done or timed out
         stopMotors();
     }
 
-    // Field-centric drive control
+    /**
+     * Field-centric mecanum drive.
+     */
     public void drive(double y, double x, double rx) {
-        double botHeading = getHeading();
-        y = -y;
-        x = -x; //change is all movements are reversed
-        rx = -rx;
 
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+        double heading = getHeading(); // radians, already corrected
 
-        double frontLeftPower  = rotY + rotX + rx;
-        double backLeftPower   = rotY - rotX + rx;
-        double frontRightPower = rotY - rotX - rx;
-        double backRightPower  = rotY + rotX - rx;
+        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
-        double max = Math.max(
-                Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower)),
-                Math.max(Math.abs(frontRightPower), Math.abs(backRightPower))
+        // Optional strafe correction
+        rotX *= 1.1;
+
+        double denominator = Math.max(
+                Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1.0
         );
-        if (max > 1.0) {
-            frontLeftPower  /= max;
-            backLeftPower   /= max;
-            frontRightPower /= max;
-            backRightPower  /= max;
-        }
+
+        double frontLeftPower  = (rotY + rotX + rx) / denominator;
+        double backLeftPower   = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower  = (rotY + rotX - rx) / denominator;
 
         frontLeft.setPower(frontLeftPower);
         backLeft.setPower(backLeftPower);
@@ -158,7 +155,6 @@ public class BasicMecanumDrive {
         backRight.setPower(backRightPower);
     }
 
-    // Stops all motors
     public void stopMotors() {
         frontLeft.setPower(0);
         backLeft.setPower(0);
@@ -166,28 +162,18 @@ public class BasicMecanumDrive {
         backRight.setPower(0);
     }
 
-    //Makes the motors brake
     public void brake() {
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        frontRight.setPower(0);
-        backRight.setPower(0);
-
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        stopMotors();
     }
 
-    //Complementary to brake motors: reset them so our motor don't brake by nature
     public void floatMotors() {
-
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
-
 }

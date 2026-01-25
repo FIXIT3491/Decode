@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOP;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,6 +29,7 @@ public class BasicTeleOp extends OpMode {
     private double intakeCounter = 0;
     private double outtakeCounter = 0;
     private int offset = 0;
+    private BNO055IMU imu;
     private DcMotor intake;
     private DcMotor ferrisMotor;
     private TouchSensor touchSensor;
@@ -35,6 +37,20 @@ public class BasicTeleOp extends OpMode {
     boolean prevRightBumper = false;
     boolean prevA = false;
     boolean prevB = false;
+
+    private Servo kick;
+    private Servo kick2;
+
+    private ElapsedTime timer = new ElapsedTime();
+    private int state = 0;
+
+    private boolean lastA = false;
+
+    // positions (adjust as needed)
+    private final double KICK_UP = 0.6;
+    private final double KICK_DOWN = 0.3;
+    private final double KICK2_UP = 1;
+    private final double KICK2_DOWN = 0.5;
 
     @Override
     public void init() {
@@ -48,17 +64,23 @@ public class BasicTeleOp extends OpMode {
         // Init Launcher Subsystem
         launcher.init(hardwareMap);
         telemetry.addData("Status", "Initialized");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         //leftFlywheel = hardwareMap.get(DcMotorEx.class, "flyLeft");
         //rightFlywheel = hardwareMap.get(DcMotorEx.class, "flyRight");
 
+        kick = hardwareMap.get(Servo.class, "kick");
+        kick2 = hardwareMap.get(Servo.class, "kick2");
+        kick2.setDirection(Servo.Direction.REVERSE);
+
+        kick.setPosition(KICK_DOWN);
+        kick2.setPosition(KICK2_DOWN);
+
         intake = hardwareMap.get(DcMotor.class, "intake");
-        ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel");
-        touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
 
         wheel.init(hardwareMap);
 
-        launcher.kickBack();
+        kick.setPosition(KICK_DOWN);
     }
 
     @Override
@@ -66,18 +88,18 @@ public class BasicTeleOp extends OpMode {
 
         // Manual stick values
         double y = -gamepad1.left_stick_y; // forward/back (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
-        double x = gamepad1.left_stick_x; // strafe
+        double x = -gamepad1.left_stick_x; // strafe
         double rx = gamepad1.right_stick_x; // rotate
 
         if (gamepad1.dpad_left) {
 
             y = -gamepad1.left_stick_y / 2;
-            x = gamepad1.left_stick_x / 2;
+            x = -gamepad1.left_stick_x / 2;
             rx = gamepad1.right_stick_x / 3;
 
         }
 
-            drive.drive(y, x, rx);
+        drive.drive(y, x, rx);
 
         // Reset IMU heading with back button
         if (gamepad1.back) {
@@ -143,15 +165,31 @@ public class BasicTeleOp extends OpMode {
 
         }
 
-        if (gamepad2.b) { //open if held
+        boolean aPressed = gamepad2.a;
 
-            launcher.kick();
-
-        } else { // close if released
-
-            launcher.kickBack();
-
+        // Rising-edge detection (debounce)
+        if (aPressed && !lastA && state == 0) {
+            kick.setPosition(KICK_UP);
+            timer.reset();
+            state = 1;
         }
+
+        // After 0.5s, spin kick2 up
+        if (state == 1 && timer.seconds() > 0.5) {
+            kick2.setPosition(KICK2_UP);
+            timer.reset();
+            state = 2;
+        }
+
+        // After another 0.5s, return both
+        if (state == 2 && timer.seconds() > 1.5) {
+            kick.setPosition(KICK_DOWN);
+            kick2.setPosition(KICK2_DOWN);
+            state = 0;
+        }
+
+        // Save button state for next loop
+        lastA = aPressed;
 
         //intake
         intake.setPower(gamepad2.right_trigger);
