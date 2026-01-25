@@ -21,9 +21,9 @@ public class KickTest extends OpMode {
 
     // positions (adjust as needed)
     private final double KICK_UP = 0.6;
-    private final double KICK_DOWN = 0.3;
+    private final double KICK_DOWN = 0.25;
     private final double KICK2_UP = 1;
-    private final double KICK2_DOWN = 0.5;
+    private final double KICK2_DOWN = 0.6;
 
     private DcMotorEx flywheel;
 
@@ -52,14 +52,14 @@ public class KickTest extends OpMode {
         }
 
         // After 0.5s, spin kick2 up
-        if (state == 1 && timer.seconds() > 0.5) {
+        if (state == 1 && timer.seconds() > 0.05) {
             kick2.setPosition(KICK2_UP);
             timer.reset();
             state = 2;
         }
 
         // After another 0.5s, return both
-        if (state == 2 && timer.seconds() > 1.5) {
+        if (state == 2 && timer.seconds() > 0.2) {
             kick.setPosition(KICK_DOWN);
             kick2.setPosition(KICK2_DOWN);
             state = 0;
