@@ -24,7 +24,7 @@ public class RedBasicAuto extends LinearOpMode {
         waitForStart();
 
         launcher.init(hardwareMap);
-        wheel.init(hardwareMap);
+        wheel.init(hardwareMap, telemetry);
 
         //move back and shoot
        // launcher.kickBack();

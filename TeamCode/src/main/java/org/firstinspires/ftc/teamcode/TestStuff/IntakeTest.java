@@ -3,7 +3,12 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Commands.Launcher;
+import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 
 @TeleOp(name = "Intake Test", group = "Test")
@@ -13,6 +18,11 @@ public class IntakeTest extends OpMode {
 
     private DcMotor intake;
 
+    private boolean lastA = false;
+    private double intakeCounter = 0;
+
+    private WheelRotation wheel = new WheelRotation();
+
     @Override
     public void init() {
 
@@ -20,6 +30,8 @@ public class IntakeTest extends OpMode {
         drive = new BasicMecanumDrive(hardwareMap);
 
         intake = hardwareMap.get(DcMotor.class, "intake");
+
+        wheel.init(hardwareMap, telemetry);
     }
 
     @Override
@@ -32,9 +44,37 @@ public class IntakeTest extends OpMode {
 
         drive.drive(y, x, rx);
 
-        if (gamepad1.right_trigger > 0){intake.setPower(1);}
-        else if (gamepad1.left_trigger > 0){intake.setPower(-1);}
-        else {intake.setPower(0);}
+        if (gamepad1.right_trigger > 0) {
+            intake.setPower(0.8);
+        } else if (gamepad1.left_trigger > 0) {
+            intake.setPower(-0.8);
+        } else {
+            intake.setPower(0);
+        }
+
+        boolean aPressed = gamepad1.a;
+
+        if (aPressed && !lastA) {
+
+            switch ((int) intakeCounter) {
+                case 0:
+                    wheel.rotateToAngle(30, 0.3);
+                    break;
+                case 1:
+                    wheel.rotateToAngle(150, 0.3);
+                    break;
+                case 2:
+                    wheel.rotateToAngle(290, 0.3);
+                    break;
+            }
+
+            intakeCounter = (intakeCounter + 1) % 3;
+
+        }
+
+        lastA = aPressed;
+
+        wheel.updateTelemetry();
 
     }
 }

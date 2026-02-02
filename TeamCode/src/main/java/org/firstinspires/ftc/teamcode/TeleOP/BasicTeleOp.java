@@ -78,7 +78,7 @@ public class BasicTeleOp extends OpMode {
 
         intake = hardwareMap.get(DcMotor.class, "intake");
 
-        wheel.init(hardwareMap);
+        wheel.init(hardwareMap, telemetry);
 
         kick.setPosition(KICK_DOWN);
     }
