@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TestStuff;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
+@Disabled
 @TeleOp(group = "Test", name = "Kick Test")
 public class KickTest extends OpMode {
 
