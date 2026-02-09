@@ -88,13 +88,13 @@ public class BasicTeleOp extends OpMode {
 
         // Manual stick values
         double y = -gamepad1.left_stick_y; // forward/back (abs(left_stick_y) * left_stick_y (Potential for smoother movement (ramp)))
-        double x = -gamepad1.left_stick_x; // strafe
+        double x = gamepad1.left_stick_x; // strafe
         double rx = gamepad1.right_stick_x; // rotate
 
         if (gamepad1.dpad_left) {
 
             y = -gamepad1.left_stick_y / 2;
-            x = -gamepad1.left_stick_x / 2;
+            x = gamepad1.left_stick_x / 2;
             rx = gamepad1.right_stick_x / 3;
 
         }

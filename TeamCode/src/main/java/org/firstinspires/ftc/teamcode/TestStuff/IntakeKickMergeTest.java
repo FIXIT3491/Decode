@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,22 +10,26 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
+import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
-@TeleOp(name = "Full System Test", group = "Test")
+@TeleOp(name = "Full System Test (Launcher + Color)", group = "Test")
 public class IntakeKickMergeTest extends OpMode {
 
     /* ---------------- Hardware ---------------- */
 
     private BasicMecanumDrive drive;
+    private Launcher launcher;
 
     private DcMotor intake;
-    private DcMotorEx flywheel;
     private DcMotor ferrisMotor;
 
     private Servo kick;
     private Servo kick2;
 
     private WheelRotation wheel = new WheelRotation();
+
+    private ColorSensor intakeColor;
+    private ColorSensor outtakeColor;
 
     /* ---------------- Kick State Machine ---------------- */
 
@@ -45,12 +50,19 @@ public class IntakeKickMergeTest extends OpMode {
     private boolean intakeActive = false;
     private boolean outtakeActive = false;
 
+    private boolean lastIntakeColor = false;
+    private boolean lastOuttakeColor = false;
+
     /* ---------------- Button Edge Tracking ---------------- */
 
     private boolean lastA = false;
-    private boolean lastB = false;
     private boolean lastRT = false;
     private boolean lastLT = false;
+    private boolean lastLauncherA = false;
+
+    /* ---------------- Launcher ---------------- */
+
+    private boolean launcherAuto = false;
 
     /* ---------------- Init ---------------- */
 
@@ -58,15 +70,19 @@ public class IntakeKickMergeTest extends OpMode {
     public void init() {
 
         drive = new BasicMecanumDrive(hardwareMap);
+        launcher = new Launcher();
+        launcher.init(hardwareMap);
+        launcher.setTrackedTagId(-1);
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         ferrisMotor = hardwareMap.get(DcMotor.class, "ferrisWheel");
 
         kick = hardwareMap.get(Servo.class, "kick");
         kick2 = hardwareMap.get(Servo.class, "kick2");
 
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        intakeColor = hardwareMap.get(ColorSensor.class, "color2");
+        outtakeColor = hardwareMap.get(ColorSensor.class, "color1");
+
         kick2.setDirection(Servo.Direction.REVERSE);
 
         kick.setPosition(KICK_DOWN);
@@ -90,27 +106,45 @@ public class IntakeKickMergeTest extends OpMode {
         /* -------- Inputs -------- */
 
         boolean aPressed = gamepad1.a;
-        boolean bPressed = gamepad1.b;
         boolean rt = gamepad1.right_trigger > 0.1;
         boolean lt = gamepad1.left_trigger > 0.1;
 
-        /* -------- Flywheel -------- */
+        boolean launcherA = gamepad2.a;
+        boolean launcherB = gamepad2.b;
 
-        flywheel.setPower(gamepad1.right_trigger > 0 ? 1.0 : 0.0);
+        /* ===================== LAUNCHER CONTROL ===================== */
 
-        /* -------- Intake Motor -------- */
-
-        if (rt) {
-            intake.setPower(0.8);
-        } else if (lt) {
-            intake.setPower(-0.8);
-        } else {
-            intake.setPower(0.0);
+        if (launcherA && !lastLauncherA) {
+            launcherAuto = true;
         }
 
-        /* =================================================
-           INTAKE MODE (RT)
-           ================================================= */
+        if (launcherB) {
+            launcherAuto = false;
+            launcher.stopFlywheel();
+        }
+
+        if (launcherAuto) {
+            launcher.updateTurretFromAprilTag();
+            launcher.updateFlywheelFromAprilTag();
+        }
+
+        if (gamepad2.x) launcher.setFlywheelRPM(3500);
+        if (gamepad2.y) launcher.setFlywheelRPM(4800);
+        if (gamepad2.right_bumper) launcher.setFlywheelRPM(6800);
+
+        launcher.updateFlywheel();
+
+        /* ===================== INTAKE MOTOR ===================== */
+
+        if (rt) {
+            intake.setPower(1);
+        } else if (lt) {
+            intake.setPower(-1);
+        } else {
+            intake.setPower(0);
+        }
+
+        /* ===================== INTAKE MODE ===================== */
 
         if (rt && !lastRT) {
             wheel.rotateToAngle(35, 0.3);
@@ -118,24 +152,24 @@ public class IntakeKickMergeTest extends OpMode {
             intakeActive = true;
         }
 
-        if (rt && aPressed && !lastA && intakeActive) {
+        boolean intakeDetected = isGreenOrPurple(intakeColor);
+
+        if (rt && intakeDetected && !lastIntakeColor && intakeActive) {
             switch (intakeCounter) {
-                case 0: wheel.rotateToAngle(35, 0.3); break;
-                case 1: wheel.rotateToAngle(148, 0.3); break;
-                case 2: wheel.rotateToAngle(268, 0.3); break;
+                case 0: wheel.rotateToAngle(35, 0.4); break;
+                case 1: wheel.rotateToAngle(148, 0.4); break;
+                case 2: wheel.rotateToAngle(268, 0.4); break;
             }
             intakeCounter = (intakeCounter + 1) % 3;
         }
 
         if (!rt && intakeActive) {
-            wheel.rotateToAngle(358, 0.3);   // idle ONLY for intake
+            wheel.rotateToAngle(358, 0.3);
             intakeActive = false;
             intakeCounter = 0;
         }
 
-        /* =================================================
-           OUTTAKE MODE (LT)
-           ================================================= */
+        /* ===================== OUTTAKE MODE ===================== */
 
         if (lt && !lastLT) {
             wheel.rotateToAngle(90, 0.3);
@@ -143,24 +177,24 @@ public class IntakeKickMergeTest extends OpMode {
             outtakeActive = true;
         }
 
-        if (lt && bPressed && !lastB && outtakeActive) {
+        boolean outtakeDetected = isGreenOrPurple(outtakeColor);
+
+        if (lt && outtakeDetected && !lastOuttakeColor && outtakeActive) {
             switch (outtakeCounter) {
-                case 0: wheel.rotateToAngle(90, 0.3); break;
-                case 1: wheel.rotateToAngle(200, 0.3); break;
-                case 2: wheel.rotateToAngle(320, 0.3); break;
+                case 0: wheel.rotateToAngle(108, 0.4); break;
+                case 1: wheel.rotateToAngle(220, 0.4); break;
+                case 2: wheel.rotateToAngle(340, 0.4); break;
             }
             outtakeCounter = (outtakeCounter + 1) % 3;
         }
 
         if (!lt && outtakeActive) {
-            wheel.rotateToAngle(358, 0.3);   // idle ONLY for outtake
+            wheel.rotateToAngle(358, 0.3);
             outtakeActive = false;
             outtakeCounter = 0;
         }
 
-        /* =================================================
-           KICK MODE (A with NO triggers)
-           ================================================= */
+        /* ===================== KICK MODE ===================== */
 
         if (!rt && !lt) {
 
@@ -186,23 +220,52 @@ public class IntakeKickMergeTest extends OpMode {
             if (kickState == 3 && kickTimer.seconds() > 0.4) {
 
                 switch (kickWheelCounter) {
-                    case 0: wheel.rotateToAngle(120, 0.3); break;
-                    case 1: wheel.rotateToAngle(240, 0.3); break;
-                    case 2: wheel.rotateToAngle(1, 0.3); break;
+                    case 0: wheel.rotateToAngle(122, 0.4); break;
+                    case 1: wheel.rotateToAngle(245, 0.4); break;
+                    case 2: wheel.rotateToAngle(4, 0.4); break;
                 }
 
                 kickWheelCounter = (kickWheelCounter + 1) % 3;
-                kickState = 0;   // NO idle after kick
+                kickState = 0;
             }
         }
 
-        /* -------- Button memory -------- */
+        /* -------- Edge Updates -------- */
 
         lastA = aPressed;
-        lastB = bPressed;
         lastRT = rt;
         lastLT = lt;
+        lastLauncherA = launcherA;
+        lastIntakeColor = intakeDetected;
+        lastOuttakeColor = outtakeDetected;
 
         wheel.updateTelemetry();
+
+        telemetry.addData("Launcher Auto", launcherAuto);
+        telemetry.addData("Flywheel RPM", "%.0f", launcher.getCurrentRPM());
+        telemetry.update();
+    }
+
+    @Override
+    public void stop() {
+        launcher.stopFlywheel();
+        launcher.closeVision();
+    }
+
+    /* ---------------- Color Detection ---------------- */
+
+    private boolean isGreenOrPurple(ColorSensor sensor) {
+
+        int r = sensor.red();
+        int g = sensor.green();
+        int b = sensor.blue();
+
+        int total = r + g + b;
+        if (total < 350) return false;
+
+        boolean isGreen = g > r + 40 && g > b + 40;
+        boolean isPurple = b > g + 30 && r > g + 10;
+
+        return isGreen || isPurple;
     }
 }

@@ -80,13 +80,13 @@ public class IntakeTest extends OpMode {
         if (intakeColorDetected && !lastIntakeColor && intakeInitialized) {
             switch (intakeCounter) {
                 case 0:
-                    wheel.rotateToAngle(35, 0.3);
+                    wheel.rotateToAngle(35, 0.4);
                     break;
                 case 1:
-                    wheel.rotateToAngle(148, 0.3);
+                    wheel.rotateToAngle(148, 0.4);
                     break;
                 case 2:
-                    wheel.rotateToAngle(268, 0.3);
+                    wheel.rotateToAngle(268, 0.4);
                     break;
             }
 
@@ -116,13 +116,13 @@ public class IntakeTest extends OpMode {
         if (outtakeColorDetected && !lastOuttakeColor && outtakeInitialized) {
             switch (outtakeCounter) {
                 case 0:
-                    wheel.rotateToAngle(90, 0.3);
+                    wheel.rotateToAngle(100, 0.4);
                     break;
                 case 1:
-                    wheel.rotateToAngle(200, 0.3);
+                    wheel.rotateToAngle(220, 0.4);
                     break;
                 case 2:
-                    wheel.rotateToAngle(320, 0.3);
+                    wheel.rotateToAngle(340, 0.4);
                     break;
             }
 

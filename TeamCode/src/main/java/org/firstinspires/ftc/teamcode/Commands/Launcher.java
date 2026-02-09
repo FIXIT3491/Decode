@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Commands.Launcher;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -20,7 +18,7 @@ public class Launcher {
     /* ===================== HARDWARE ===================== */
     private DcMotorEx flywheel;
     private DcMotorEx turret;
-    private Servo kick;
+    private Servo hood;
 
     /* ===================== VISION ===================== */
     private VisionPortal visionPortal;
@@ -31,20 +29,21 @@ public class Launcher {
     // Flywheel encoder
     private static final double FLYWHEEL_TICKS_PER_REV = 28.0;
 
-    // Turret encoder constants (CHANGE THESE)
-    private static final double TURRET_TICKS_PER_REV = 537.7; // example: goBILDA 5202
-    private static final double TURRET_GEAR_RATIO = 1.0;     // motor:turret
+    // Turret encoder
+    private static final double TURRET_TICKS_PER_REV = 537.7;
+    private static final double TURRET_GEAR_RATIO = 1.0;
     private static final double DEGREES_PER_TICK =
             360.0 / (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO);
 
-    // Turret limits (degrees)
+    // Turret limits
     private static final double TURRET_LEFT_LIMIT_DEG = -20.0;
     private static final double TURRET_RIGHT_LIMIT_DEG = 20.0;
     private static final double TURRET_DEADBAND_DEG = 1.5;
 
     // Turret control
-    private static final double TURRET_KP = 0.01;
-    private static final double TURRET_MAX_POWER = 0.4;
+    private static final double TURRET_KP = 0.015;
+    private static final double TURRET_MAX_POWER = 0.35;
+    private static final double TURRET_SLEW_RATE = 0.02; // power per loop
 
     // Flywheel PIDF
     private final double kF = 0.0002;
@@ -52,14 +51,20 @@ public class Launcher {
     private final double kI = 0.0;
     private final double kD = 0.0001;
 
+    /* ===================== RPM PRESETS ===================== */
+
+    private static final double CLOSE_RPM = 3200; // < 4 ft
+    private static final double MID_RPM   = 4200; // 4–7 ft
+    private static final double FAR_RPM   = 5400; // > 10 ft
+
     /* ===================== STATE ===================== */
     private double targetRPM = 0;
     private double integral = 0;
     private double lastError = 0;
 
     private int turretZeroTicks = 0;
+    private double lastTurretPower = 0;
 
-    // Tag selection (-1 = any)
     private int trackedTagId = -1;
 
     /* ===================== INIT ===================== */
@@ -76,7 +81,7 @@ public class Launcher {
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        turretZeroTicks = 0;
+        hood = hardwareMap.get(Servo.class, "hood");
 
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(
@@ -91,12 +96,11 @@ public class Launcher {
         trackedTagId = id;
     }
 
-    /* ===================== APRILTAG TURRET TRACKING ===================== */
+    /* ===================== TURRET TRACKING ===================== */
 
     public void updateTurretFromAprilTag() {
 
         AprilTagDetection tag = getTrackedTag();
-
         double currentAngle = getTurretAngleDeg();
         double targetAngle = 0;
 
@@ -108,22 +112,34 @@ public class Launcher {
             );
         }
 
-        // If tag lost → return to center (0 deg)
         double error = targetAngle - currentAngle;
 
         if (Math.abs(error) < TURRET_DEADBAND_DEG) {
-            turret.setPower(0);
+            applyTurretPower(0);
             return;
         }
 
-        double power = Range.clip(error * TURRET_KP, -TURRET_MAX_POWER, TURRET_MAX_POWER);
+        double rawPower = Range.clip(
+                error * TURRET_KP,
+                -TURRET_MAX_POWER,
+                TURRET_MAX_POWER
+        );
+
+        // Limit acceleration (slew rate)
+        double smoothPower = slew(rawPower, lastTurretPower, TURRET_SLEW_RATE);
+        lastTurretPower = smoothPower;
 
         // Prevent pushing past limits
-        if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && power < 0) ||
-                (currentAngle >= TURRET_RIGHT_LIMIT_DEG && power > 0)) {
-            power = 0;
+        if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
+                (currentAngle >= TURRET_RIGHT_LIMIT_DEG && smoothPower > 0)) {
+            smoothPower = 0;
         }
 
+        turret.setPower(smoothPower);
+    }
+
+    private void applyTurretPower(double power) {
+        lastTurretPower = power;
         turret.setPower(power);
     }
 
@@ -131,7 +147,7 @@ public class Launcher {
         return (turret.getCurrentPosition() - turretZeroTicks) * DEGREES_PER_TICK;
     }
 
-    /* ===================== APRILTAG AUTO RPM ===================== */
+    /* ===================== APRILTAG RPM LOGIC ===================== */
 
     public boolean updateFlywheelFromAprilTag() {
 
@@ -141,22 +157,25 @@ public class Launcher {
             return false;
         }
 
-        setFlywheelRPM(distanceToRPM(tag.ftcPose.range));
+        double distanceFeet = tag.ftcPose.range / 12.0;
+        setFlywheelRPM(selectRPM(distanceFeet));
         return true;
     }
 
-    /* ===================== TAG FILTER ===================== */
+    private double selectRPM(double distanceFeet) {
 
-    private AprilTagDetection getTrackedTag() {
-
-        List<AprilTagDetection> detections = aprilTag.getDetections();
-
-        for (AprilTagDetection tag : detections) {
-            if (trackedTagId == -1 || tag.id == trackedTagId) {
-                return tag;
-            }
+        if (distanceFeet < 4.0) {
+            return CLOSE_RPM;
         }
-        return null;
+        if (distanceFeet <= 7.0) {
+            return MID_RPM;
+        }
+        if (distanceFeet > 9.0) {
+            return FAR_RPM;
+        }
+
+        // Dead zone (7–10 ft): keep current RPM
+        return targetRPM;
     }
 
     /* ===================== FLYWHEEL ===================== */
@@ -168,6 +187,8 @@ public class Launcher {
     public void stopFlywheel() {
         targetRPM = 0;
         flywheel.setPower(0);
+        integral = 0;
+        lastError = 0;
     }
 
     public double getCurrentRPM() {
@@ -177,9 +198,7 @@ public class Launcher {
     public void updateFlywheel() {
 
         if (targetRPM == 0) {
-            flywheel.setPower(0);
-            integral = 0;
-            lastError = 0;
+            stopFlywheel();
             return;
         }
 
@@ -193,13 +212,27 @@ public class Launcher {
                         (kD * (error - lastError));
 
         lastError = error;
-        flywheel.setPower(Range.clip(output, -1, 1));
+        flywheel.setPower(Range.clip(output, 0, 1));
     }
 
     /* ===================== HELPERS ===================== */
 
-    private double distanceToRPM(double distanceInches) {
-        return Range.clip(150.0 * distanceInches + 2100.0, 2500, 6000);
+    private AprilTagDetection getTrackedTag() {
+        List<AprilTagDetection> detections = aprilTag.getDetections();
+        for (AprilTagDetection tag : detections) {
+            if (trackedTagId == -1 || tag.id == trackedTagId) {
+                return tag;
+            }
+        }
+        return null;
+    }
+
+    private double slew(double target, double current, double maxDelta) {
+        double delta = target - current;
+        if (Math.abs(delta) > maxDelta) {
+            delta = Math.signum(delta) * maxDelta;
+        }
+        return current + delta;
     }
 
     public void closeVision() {
