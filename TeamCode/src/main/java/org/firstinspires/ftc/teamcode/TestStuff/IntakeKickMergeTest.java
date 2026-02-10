@@ -59,6 +59,7 @@ public class IntakeKickMergeTest extends OpMode {
     private boolean lastRT = false;
     private boolean lastLT = false;
     private boolean lastLauncherA = false;
+    private boolean hoodManual = false;
 
     /* ---------------- Launcher ---------------- */
 
@@ -133,6 +134,25 @@ public class IntakeKickMergeTest extends OpMode {
         if (gamepad2.right_bumper) launcher.setFlywheelRPM(6800);
 
         launcher.updateFlywheel();
+
+        /* ===================== HOOD CONTROL ===================== */
+
+        if (launcherAuto) {
+            // Hood is updated automatically by Launcher
+            hoodManual = false;
+        }
+
+        // Manual test override
+        if (gamepad2.dpad_up) {
+            launcher.setHoodPosition(0.65); // max test
+            hoodManual = true;
+        }
+
+        if (gamepad2.dpad_down) {
+            launcher.setHoodPosition(0.25); // min test
+            hoodManual = true;
+        }
+
 
         /* ===================== INTAKE MOTOR ===================== */
 
@@ -243,6 +263,7 @@ public class IntakeKickMergeTest extends OpMode {
 
         telemetry.addData("Launcher Auto", launcherAuto);
         telemetry.addData("Flywheel RPM", "%.0f", launcher.getCurrentRPM());
+        telemetry.addData("Hood Mode", hoodManual ? "MANUAL" : "AUTO");
         telemetry.update();
     }
 

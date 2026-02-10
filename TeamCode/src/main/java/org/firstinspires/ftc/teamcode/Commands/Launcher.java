@@ -29,6 +29,13 @@ public class Launcher {
     // Flywheel encoder
     private static final double FLYWHEEL_TICKS_PER_REV = 28.0;
 
+    // Hood servo tuning
+    private static final double MIN_HOOD_POS = 0.25; // 3 ft
+    private static final double MAX_HOOD_POS = 0.65; // 11 ft
+
+    private static final double HOOD_MIN_DIST_FT = 3.0;
+    private static final double HOOD_MAX_DIST_FT = 11.0;
+
     // Turret encoder
     private static final double TURRET_TICKS_PER_REV = 537.7;
     private static final double TURRET_GEAR_RATIO = 1.0;
@@ -88,6 +95,10 @@ public class Launcher {
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 aprilTag
         );
+
+        hood = hardwareMap.get(Servo.class, "hood");
+        hood.setPosition(MIN_HOOD_POS);
+
     }
 
     /* ===================== TAG SELECTION ===================== */
@@ -135,7 +146,7 @@ public class Launcher {
             smoothPower = 0;
         }
 
-        turret.setPower(smoothPower);
+        turret.setPower(-smoothPower);
     }
 
     private void applyTurretPower(double power) {
@@ -158,8 +169,28 @@ public class Launcher {
         }
 
         double distanceFeet = tag.ftcPose.range / 12.0;
+
         setFlywheelRPM(selectRPM(distanceFeet));
+        updateHoodFromDistance(distanceFeet);
+
         return true;
+    }
+
+    private void updateHoodFromDistance(double distanceFeet) {
+
+        double t = (distanceFeet - HOOD_MIN_DIST_FT) /
+                (HOOD_MAX_DIST_FT - HOOD_MIN_DIST_FT);
+
+        t = Range.clip(t, 0.0, 1.0);
+
+        double hoodPos = MIN_HOOD_POS +
+                t * (MAX_HOOD_POS - MIN_HOOD_POS);
+
+        hood.setPosition(hoodPos);
+    }
+
+    public void setHoodPosition(double pos) {
+        hood.setPosition(Range.clip(pos, 0.0, 1.0));
     }
 
     private double selectRPM(double distanceFeet) {
