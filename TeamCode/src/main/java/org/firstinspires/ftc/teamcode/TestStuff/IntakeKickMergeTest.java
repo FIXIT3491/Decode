@@ -25,6 +25,7 @@ public class IntakeKickMergeTest extends OpMode {
 
     private Servo kick;
     private Servo kick2;
+    private Servo hood;
 
     private WheelRotation wheel = new WheelRotation();
 
@@ -89,6 +90,8 @@ public class IntakeKickMergeTest extends OpMode {
         kick.setPosition(KICK_DOWN);
         kick2.setPosition(KICK2_DOWN);
 
+        hood = hardwareMap.get(Servo.class, "hood");
+
         wheel.init(hardwareMap, telemetry);
     }
 
@@ -129,9 +132,15 @@ public class IntakeKickMergeTest extends OpMode {
             launcher.updateFlywheelFromAprilTag();
         }
 
-        if (gamepad2.x) launcher.setFlywheelRPM(3500);
-        if (gamepad2.y) launcher.setFlywheelRPM(4800);
-        if (gamepad2.right_bumper) launcher.setFlywheelRPM(6800);
+        if (gamepad2.x) {
+            launcher.setFlywheelRPM(3200);
+            hood.setPosition(0.0);}
+        if (gamepad2.y) {
+            launcher.setFlywheelRPM(4000);
+            hood.setPosition(0.2);}
+        if (gamepad2.right_bumper) {
+            launcher.setFlywheelRPM(6800);
+            hood.setPosition(0.4);}
 
         launcher.updateFlywheel();
 

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -29,13 +28,6 @@ public class Launcher {
     // Flywheel encoder
     private static final double FLYWHEEL_TICKS_PER_REV = 28.0;
 
-    // Hood servo tuning
-    private static final double MIN_HOOD_POS = 0.25; // 3 ft
-    private static final double MAX_HOOD_POS = 0.65; // 11 ft
-
-    private static final double HOOD_MIN_DIST_FT = 3.0;
-    private static final double HOOD_MAX_DIST_FT = 11.0;
-
     // Turret encoder
     private static final double TURRET_TICKS_PER_REV = 537.7;
     private static final double TURRET_GEAR_RATIO = 1.0;
@@ -49,8 +41,8 @@ public class Launcher {
 
     // Turret control
     private static final double TURRET_KP = 0.015;
-    private static final double TURRET_MAX_POWER = 0.35;
-    private static final double TURRET_SLEW_RATE = 0.02; // power per loop
+    private static final double TURRET_MAX_POWER = 0.4;
+    private static final double TURRET_SLEW_RATE = 0.02;
 
     // Flywheel PIDF
     private final double kF = 0.0002;
@@ -60,11 +52,18 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 3200; // < 4 ft
+    private static final double CLOSE_RPM = 3200; // <4 ft
     private static final double MID_RPM   = 4200; // 4–7 ft
-    private static final double FAR_RPM   = 5400; // > 10 ft
+    private static final double FAR_RPM   = 5400; // >7 ft
+
+    /* ===================== HOOD PRESETS ===================== */
+
+    private static final double CLOSE_HOOD = 0.0;
+    private static final double MID_HOOD   = 0.2;
+    private static final double FAR_HOOD   = 0.37;
 
     /* ===================== STATE ===================== */
+
     private double targetRPM = 0;
     private double integral = 0;
     private double lastError = 0;
@@ -88,17 +87,16 @@ public class Launcher {
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
+        turretZeroTicks = turret.getCurrentPosition();
+
         hood = hardwareMap.get(Servo.class, "hood");
+        hood.setPosition(FAR_HOOD);
 
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(
                 hardwareMap.get(WebcamName.class, "Webcam 1"),
                 aprilTag
         );
-
-        hood = hardwareMap.get(Servo.class, "hood");
-        hood.setPosition(MIN_HOOD_POS);
-
     }
 
     /* ===================== TAG SELECTION ===================== */
@@ -113,17 +111,14 @@ public class Launcher {
 
         AprilTagDetection tag = getTrackedTag();
         double currentAngle = getTurretAngleDeg();
-        double targetAngle = 0;
 
-        if (tag != null) {
-            targetAngle = Range.clip(
-                    currentAngle - tag.ftcPose.yaw,
-                    TURRET_LEFT_LIMIT_DEG,
-                    TURRET_RIGHT_LIMIT_DEG
-            );
+        if (tag == null) {
+            applyTurretPower(0);
+            return;
         }
 
-        double error = targetAngle - currentAngle;
+        // Use yaw directly as error (no recursive angle math)
+        double error = -tag.ftcPose.yaw;
 
         if (Math.abs(error) < TURRET_DEADBAND_DEG) {
             applyTurretPower(0);
@@ -136,17 +131,16 @@ public class Launcher {
                 TURRET_MAX_POWER
         );
 
-        // Limit acceleration (slew rate)
         double smoothPower = slew(rawPower, lastTurretPower, TURRET_SLEW_RATE);
         lastTurretPower = smoothPower;
 
-        // Prevent pushing past limits
+        // Respect mechanical limits
         if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
                 (currentAngle >= TURRET_RIGHT_LIMIT_DEG && smoothPower > 0)) {
             smoothPower = 0;
         }
 
-        turret.setPower(-smoothPower);
+        turret.setPower(smoothPower);
     }
 
     private void applyTurretPower(double power) {
@@ -158,7 +152,7 @@ public class Launcher {
         return (turret.getCurrentPosition() - turretZeroTicks) * DEGREES_PER_TICK;
     }
 
-    /* ===================== APRILTAG RPM LOGIC ===================== */
+    /* ===================== FLYWHEEL CONTROL ===================== */
 
     public boolean updateFlywheelFromAprilTag() {
 
@@ -176,40 +170,36 @@ public class Launcher {
         return true;
     }
 
-    private void updateHoodFromDistance(double distanceFeet) {
-
-        double t = (distanceFeet - HOOD_MIN_DIST_FT) /
-                (HOOD_MAX_DIST_FT - HOOD_MIN_DIST_FT);
-
-        t = Range.clip(t, 0.0, 1.0);
-
-        double hoodPos = MIN_HOOD_POS +
-                t * (MAX_HOOD_POS - MIN_HOOD_POS);
-
-        hood.setPosition(hoodPos);
-    }
-
-    public void setHoodPosition(double pos) {
-        hood.setPosition(Range.clip(pos, 0.0, 1.0));
-    }
-
     private double selectRPM(double distanceFeet) {
 
         if (distanceFeet < 4.0) {
             return CLOSE_RPM;
         }
-        if (distanceFeet <= 7.0) {
+        else if (distanceFeet <= 7.0) {
             return MID_RPM;
         }
-        if (distanceFeet > 9.0) {
+        else if (distanceFeet > 9.0){
             return FAR_RPM;
         }
-
-        // Dead zone (7–10 ft): keep current RPM
         return targetRPM;
     }
 
-    /* ===================== FLYWHEEL ===================== */
+    private void updateHoodFromDistance(double distanceFeet) {
+
+        if (distanceFeet < 4.0) {
+            hood.setPosition(CLOSE_HOOD);
+        }
+        else if (distanceFeet <= 7.0) {
+            hood.setPosition(MID_HOOD);
+        }
+        else {
+            hood.setPosition(FAR_HOOD);
+        }
+    }
+
+    public void setHoodPosition(double pos) {
+        hood.setPosition(Range.clip(pos, 0.0, 1.0));
+    }
 
     public void setFlywheelRPM(double rpm) {
         targetRPM = rpm;
@@ -229,7 +219,7 @@ public class Launcher {
     public void updateFlywheel() {
 
         if (targetRPM == 0) {
-            stopFlywheel();
+            flywheel.setPower(0);
             return;
         }
 
@@ -243,6 +233,7 @@ public class Launcher {
                         (kD * (error - lastError));
 
         lastError = error;
+
         flywheel.setPower(Range.clip(output, 0, 1));
     }
 
