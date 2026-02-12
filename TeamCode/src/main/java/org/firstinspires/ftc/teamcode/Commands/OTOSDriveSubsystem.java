@@ -82,7 +82,7 @@ public class OTOSDriveSubsystem {
         backRight.setPower(backRightPower);
     }
 
-    //Pathing API
+    //Pathing
     public boolean goToPoint(double targetX,
                              double targetY,
                              double targetHeading) {
@@ -92,32 +92,69 @@ public class OTOSDriveSubsystem {
         double errorX = targetX - pose.x;
         double errorY = targetY - pose.y;
 
-        double distanceError = Math.hypot(errorX, errorY);
-        double headingError =
-                angleWrap(targetHeading - pose.h);
+        double distance = Math.hypot(errorX, errorY);
+        double headingError = angleWrap(targetHeading - pose.h);
 
-        if (distanceError < POSITION_TOLERANCE &&
+        // Stop condition
+        if (distance < POSITION_TOLERANCE &&
                 Math.abs(headingError) < HEADING_TOLERANCE) {
             stop();
             return true;
         }
 
-        // Field-centric proportional control
-        double fieldY = errorX * kP_TRANSLATION; // forward
-        double fieldX = errorY * kP_TRANSLATION; // strafe
-        double turn   = headingError * kP_ROTATION;
+        // Convert field error to robot-centric error
+        double botHeading = pose.h;
 
-        double max = Math.max(1.0,
-                Math.max(Math.abs(fieldX),
-                        Math.max(Math.abs(fieldY), Math.abs(turn))));
+        double robotX =  errorX * Math.cos(botHeading) + errorY * Math.sin(botHeading);
+        double robotY = -errorX * Math.sin(botHeading) + errorY * Math.cos(botHeading);
 
-        fieldX /= max;
-        fieldY /= max;
-        turn   /= max;
+        // Apply proportional control
+        double driveX = robotX * 0.03;
+        double driveY = robotY * 0.03;
+        double turn   = headingError * 0.8;
 
-        drive(fieldY, fieldX, turn);
+        // Deadband to prevent jitter
+        if (Math.abs(driveX) < 0.02) driveX = 0;
+        if (Math.abs(driveY) < 0.02) driveY = 0;
+        if (Math.abs(turn)   < 0.02) turn   = 0;
+
+        // Clamp max power
+        driveX = Math.max(-0.6, Math.min(0.6, driveX));
+        driveY = Math.max(-0.6, Math.min(0.6, driveY));
+        turn   = Math.max(-0.5, Math.min(0.5, turn));
+
+        driveRobotCentric(driveY, driveX, turn);
+
         return false;
     }
+
+    public void driveRobotCentric(double y, double x, double rx) {
+
+        double frontLeftPower  = y + x + rx;
+        double backLeftPower   = y - x + rx;
+        double frontRightPower = y - x - rx;
+        double backRightPower  = y + x - rx;
+
+        double max = Math.max(
+                Math.max(Math.abs(frontLeftPower),
+                        Math.abs(backLeftPower)),
+                Math.max(Math.abs(frontRightPower),
+                        Math.abs(backRightPower))
+        );
+
+        if (max > 1.0) {
+            frontLeftPower  /= max;
+            backLeftPower   /= max;
+            frontRightPower /= max;
+            backRightPower  /= max;
+        }
+
+        frontLeft.setPower(frontLeftPower);
+        backLeft.setPower(backLeftPower);
+        frontRight.setPower(frontRightPower);
+        backRight.setPower(backRightPower);
+    }
+
 
     //Util
     public double getHeading() {
