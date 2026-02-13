@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOP;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
+@Disabled
 @TeleOp(name = "BasicTeleOp")
 public class BasicTeleOp extends OpMode {
 

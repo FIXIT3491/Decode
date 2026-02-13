@@ -117,8 +117,8 @@ public class Launcher {
             return;
         }
 
-        // Use yaw directly as error (no recursive angle math)
-        double error = -tag.ftcPose.yaw;
+        // Horizontal aiming
+        double error = -tag.ftcPose.bearing; // remove - if turns wrong way
 
         if (Math.abs(error) < TURRET_DEADBAND_DEG) {
             applyTurretPower(0);
