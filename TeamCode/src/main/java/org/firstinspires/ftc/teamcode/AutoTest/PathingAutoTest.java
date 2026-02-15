@@ -27,53 +27,8 @@ public class PathingAutoTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            switch (state) {
-
-                case 0:
-                    // Move forward 24 inches
-                    if (drive.goToPoint(24, 0, 0)) {
-                        state++;
-                        sleep(500);
-                    }
-                    break;
-
-                case 1:
-                    // Strafe right 24 inches
-                    if (drive.goToPoint(24, 24, 0)) {
-                        state++;
-                        sleep(500);
-                    }
-                    break;
-
-                case 2:
-                    // Rotate 90 degrees
-                    if (drive.goToPoint(24, 24, Math.toRadians(90))) {
-                        state++;
-                        sleep(500);
-                    }
-                    break;
-
-                case 3:
-                    // Drive back to origin while rotated
-                    if (drive.goToPoint(0, 0, Math.toRadians(90))) {
-                        state++;
-                        sleep(500);
-                    }
-                    break;
-
-                case 4:
-                    // Rotate back to 0 degrees
-                    if (drive.goToPoint(0, 0, 0)) {
-                        state++;
-                        sleep(500);
-                    }
-                    break;
-
-                default:
-                    drive.stop();
-                    telemetry.addLine("Test Complete");
-                    telemetry.update();
-                    return;
+            if (drive.moveForward(24)) {
+                break;
             }
 
             // === Live Telemetry ===

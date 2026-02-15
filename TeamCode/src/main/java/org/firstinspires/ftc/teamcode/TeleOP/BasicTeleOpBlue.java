@@ -28,7 +28,6 @@ import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
-
 @TeleOp(name = "Basic TeleOp Blue", group = "Main TeleOp")
 public class BasicTeleOpBlue extends OpMode {
 
@@ -114,8 +113,8 @@ public class BasicTeleOpBlue extends OpMode {
         kick.setPosition(KICK_DOWN);
         kick2.setPosition(KICK2_DOWN);
 
-        park1.setPosition(0.2);
-        park2.setPosition(0.2);
+        park1.setPosition(0.7);
+        park2.setPosition(0.7);
 
         hood = hardwareMap.get(Servo.class, "hood");
 
@@ -273,12 +272,12 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* -------- Parking -------- */
         if (gamepad1.dpad_down) {
-            park1.setPosition(0.7);
-            park2.setPosition(0.7);
-            parkTimer.reset();
-        } else if (gamepad1.dpad_up) {
             park1.setPosition(0.2);
             park2.setPosition(0.2);
+            parkTimer.reset();
+        } else if (gamepad1.dpad_up) {
+            park1.setPosition(0.7);
+            park2.setPosition(0.7);
         }
 
         /* -------- Edge Updates -------- */
