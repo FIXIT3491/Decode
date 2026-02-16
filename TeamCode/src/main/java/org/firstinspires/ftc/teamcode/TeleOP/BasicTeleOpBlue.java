@@ -63,6 +63,8 @@ public class BasicTeleOpBlue extends OpMode {
     private final double KICK2_UP = 1.0;
     private final double KICK2_DOWN = 0.5;
 
+    private int offset = 0;
+
     /* ---------------- Intake / Outtake ---------------- */
 
     private int intakeCounter = 0;
@@ -131,6 +133,13 @@ public class BasicTeleOpBlue extends OpMode {
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
+
+        if (gamepad1.right_bumper) {
+            y = -gamepad1.left_stick_y /2;
+            x = gamepad1.left_stick_x /2;
+            rx = gamepad1.right_stick_x /3;
+        }
+
         drive.drive(y, x, rx);
 
         /* -------- Inputs -------- */
@@ -238,6 +247,12 @@ public class BasicTeleOpBlue extends OpMode {
 
         if (!rt && !lt) {
 
+            if (gamepad2.dpad_left) {
+                offset -= 1;
+            } else if (gamepad2.dpad_right) {
+                offset += 1;
+            }
+
             if (aPressed && !lastA && kickState == 0) {
                 kick.setPosition(KICK_UP);
                 kickTimer.reset();
@@ -260,9 +275,9 @@ public class BasicTeleOpBlue extends OpMode {
             if (kickState == 3 && kickTimer.seconds() > 0.4) {
 
                 switch (kickWheelCounter) {
-                    case 0: wheel.rotateToAngle(122, 0.4); break;
-                    case 1: wheel.rotateToAngle(245, 0.4); break;
-                    case 2: wheel.rotateToAngle(4, 0.4); break;
+                    case 0: wheel.rotateToAngle( (125 + offset), 0.4); break;
+                    case 1: wheel.rotateToAngle((246 + offset), 0.4); break;
+                    case 2: wheel.rotateToAngle((6 + offset), 0.4); break;
                 }
 
                 kickWheelCounter = (kickWheelCounter + 1) % 3;

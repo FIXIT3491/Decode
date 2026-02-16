@@ -62,8 +62,8 @@ public class OTOSDriveSubsystem {
         SparkFunOTOS.Pose2D pose = getPose();
 
 
-        double currentX = -pose.y;
-        double currentY = -pose.x;   //flip if needed for y
+        double currentX = pose.y;
+        double currentY = pose.x;   //flip if needed for y
 
 
         double errorX = targetX - currentX;
@@ -101,7 +101,7 @@ public class OTOSDriveSubsystem {
         driveY = clamp(driveY, -MAX_TRANSLATION_POWER, MAX_TRANSLATION_POWER);
         turn   = clamp(turn,   -MAX_ROTATION_POWER,   MAX_ROTATION_POWER);
 
-
+;
         driveRobotCentric(driveY, driveX, turn);
 
 
