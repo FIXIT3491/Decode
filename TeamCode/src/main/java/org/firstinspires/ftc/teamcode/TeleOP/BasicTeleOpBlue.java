@@ -272,8 +272,8 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* -------- Parking -------- */
         if (gamepad1.dpad_down) {
-            park1.setPosition(0.2);
-            park2.setPosition(0.2);
+            park1.setPosition(0.3);
+            park2.setPosition(0.3);
             parkTimer.reset();
         } else if (gamepad1.dpad_up) {
             park1.setPosition(0.7);

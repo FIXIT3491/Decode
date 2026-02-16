@@ -47,9 +47,9 @@ public class OTOS_Test extends LinearOpMode {
             telemetry.addLine("Press Y to reset tracking");
             telemetry.addLine();
 
-            telemetry.addData("X (in)", "%.2f", pos.x);
-            telemetry.addData("Y (in)", "%.2f", pos.y);
-            telemetry.addData("Heading (deg)", "%.1f", pos.h);
+            telemetry.addData("X (in)", "%.2f", -pos.y);
+            telemetry.addData("Y (in)", "%.2f", -pos.x);
+            telemetry.addData("Heading (deg)", "%.1f", -pos.h);
             telemetry.addData("Total Distance (in)", "%.2f", totalDistance);
 
             telemetry.update();

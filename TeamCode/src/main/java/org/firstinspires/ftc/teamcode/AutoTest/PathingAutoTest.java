@@ -27,9 +27,7 @@ public class PathingAutoTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (drive.moveForward(24)) {
-                break;
-            }
+            drive.goToPoint(24,0,0);
 
             // === Live Telemetry ===
             telemetry.addData("State", state);
