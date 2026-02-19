@@ -67,28 +67,37 @@ public class BlueBasicAuto extends LinearOpMode {
         //move back and shoot
         drive.resetHeading();
         sleep(100);
-        drive.drive(-0.5,0,0);
-        sleep(1000);
-        drive.stopMotors();
         launcher.setFlywheelRPM(3200);
         launcher.updateFlywheel();
-        hood.setPosition(0.0);
+        launcher.updateTurretFromAprilTag();
+        hood.setPosition(0.1);
+        drive.drive(-0.5,0,0);
+        sleep(1450);
+        drive.brake();
         sleep(200);
+        launcher.updateFlywheel();
+        launcher.updateTurretFromAprilTag();
 
-        while (opModeIsActive() && kickRun < 3){
+        while (opModeIsActive() && kickRun <= 6){
             if (kickState == 0) {
+                launcher.updateFlywheel();
+                launcher.updateTurretFromAprilTag();
                 kick.setPosition(KICK_UP);
                 sleep(100);
                 kickState = 1;
             }
 
             if (kickState == 1) {
+                launcher.updateFlywheel();
+                launcher.updateTurretFromAprilTag();
                 kick2.setPosition(KICK2_UP);
                 sleep(200);
                 kickState = 2;
             }
 
             if (kickState == 2) {
+                launcher.updateFlywheel();
+                launcher.updateTurretFromAprilTag();
                 kick.setPosition(KICK_DOWN);
                 kick2.setPosition(KICK2_DOWN);
                 sleep(400);
@@ -96,7 +105,8 @@ public class BlueBasicAuto extends LinearOpMode {
             }
 
             if (kickState == 3) {
-
+                launcher.updateFlywheel();
+                launcher.updateTurretFromAprilTag();
                 switch (kickWheelCounter) {
                     case 0: wheel.rotateToAngle((120), 0.3); break;
                     case 1: wheel.rotateToAngle((240), 0.3); break;
