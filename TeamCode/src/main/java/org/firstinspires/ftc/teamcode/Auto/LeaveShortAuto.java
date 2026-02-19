@@ -21,7 +21,7 @@ public class LeaveShortAuto extends LinearOpMode {
 
         sleep(10000);
         drive.drive(0.44,0,0);
-        sleep(450);
+        sleep(750);
         drive.drive(0,0,0);
 
 

@@ -145,29 +145,16 @@ public class BasicTeleOpRed extends OpMode {
         boolean launcherLB = gamepad2.left_bumper;
 
         /* ===================== LAUNCHER CONTROL ===================== */
-
-        if (launcherRB && !lastLauncherRB) {
-            launcherAuto = true;
-        }
-
-        if (launcherLB) {
-            launcherAuto = false;
-            launcher.stopFlywheel();
-        }
-
-        if (launcherAuto) {
-            launcher.updateTurretFromAprilTag();
-            launcher.updateFlywheelFromAprilTag();
-        }
+        launcher.updateTurretFromAprilTag();
 
         if (gamepad2.x) {
             launcher.setFlywheelRPM(3200);
             hood.setPosition(0.0);}
         else if (gamepad2.y) {
-            launcher.setFlywheelRPM(4000);
+            launcher.setFlywheelRPM(3450);
             hood.setPosition(0.17);}
         else if (gamepad2.b) {
-            launcher.setFlywheelRPM(4800);
+            launcher.setFlywheelRPM(4250);
             hood.setPosition(0.25);}
         else {
             launcher.setFlywheelRPM(0);
@@ -189,7 +176,7 @@ public class BasicTeleOpRed extends OpMode {
         /* ===================== INTAKE MODE ===================== */
 
         if (rt && !lastRT) {
-            wheel.rotateToAngle(35, 0.3);
+            wheel.rotateToAngle(37, 0.3);
             intakeCounter = 1;
             intakeActive = true;
         }
@@ -198,15 +185,15 @@ public class BasicTeleOpRed extends OpMode {
 
         if (rt && intakeDetected && !lastIntakeColor && intakeActive) {
             switch (intakeCounter) {
-                case 0: wheel.rotateToAngle(35, 0.4); break;
-                case 1: wheel.rotateToAngle(148, 0.4); break;
-                case 2: wheel.rotateToAngle(268, 0.4); break;
+                case 0: wheel.rotateToAngle(37, 0.4); break;
+                case 1: wheel.rotateToAngle(151, 0.4); break;
+                case 2: wheel.rotateToAngle(271, 0.4); break;
             }
             intakeCounter = (intakeCounter + 1) % 3;
         }
 
         if (!rt && intakeActive) {
-            wheel.rotateToAngle(358, 0.3);
+            wheel.rotateToAngle(357, 0.3);
             intakeActive = false;
             intakeCounter = 0;
         }
@@ -223,15 +210,15 @@ public class BasicTeleOpRed extends OpMode {
 
         if (lt && outtakeDetected && !lastOuttakeColor && outtakeActive) {
             switch (outtakeCounter) {
-                case 0: wheel.rotateToAngle(108, 0.4); break;
-                case 1: wheel.rotateToAngle(220, 0.4); break;
-                case 2: wheel.rotateToAngle(340, 0.4); break;
+                case 0: wheel.rotateToAngle(107, 0.4); break;
+                case 1: wheel.rotateToAngle(219, 0.4); break;
+                case 2: wheel.rotateToAngle(338, 0.4); break;
             }
             outtakeCounter = (outtakeCounter + 1) % 3;
         }
 
         if (!lt && outtakeActive) {
-            wheel.rotateToAngle(358, 0.3);
+            wheel.rotateToAngle(357, 0.3);
             outtakeActive = false;
             outtakeCounter = 0;
         }
@@ -268,9 +255,9 @@ public class BasicTeleOpRed extends OpMode {
             if (kickState == 3 && kickTimer.seconds() > 0.4) {
 
                 switch (kickWheelCounter) {
-                    case 0: wheel.rotateToAngle((125 + offset), 0.4); break;
-                    case 1: wheel.rotateToAngle((246 + offset), 0.4); break;
-                    case 2: wheel.rotateToAngle((6 + offset), 0.4); break;
+                    case 0: wheel.rotateToAngle((122 + offset), 0.3); break;
+                    case 1: wheel.rotateToAngle((243 + offset), 0.3); break;
+                    case 2: wheel.rotateToAngle((4 + offset), 0.3); break;
                 }
 
                 kickWheelCounter = (kickWheelCounter + 1) % 3;
@@ -301,7 +288,10 @@ public class BasicTeleOpRed extends OpMode {
 
         telemetry.addData("Launcher Auto", launcherAuto);
         telemetry.addData("Flywheel RPM", "%.0f", launcher.getCurrentRPM());
-        telemetry.addData("Hood Mode", hoodManual ? "MANUAL" : "AUTO");
+        telemetry.addData("Spindex: ", ferrisMotor.getCurrentPosition());
+        telemetry.addData("Kick count: ", kickWheelCounter % 3);
+        telemetry.addData("Back Count: ", intakeCounter % 3);
+        telemetry.addData("Front Count: ", outtakeCounter % 3);
         telemetry.update();
     }
 
