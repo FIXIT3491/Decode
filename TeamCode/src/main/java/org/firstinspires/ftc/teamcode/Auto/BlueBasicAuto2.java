@@ -117,8 +117,10 @@ public class BlueBasicAuto2 extends LinearOpMode {
             }
         }
 
-        drive.drive(0.5,-0.3,0);
-        sleep(700);
+        launcher.stopFlywheel();
+        sleep(10000);
+        drive.drive(0,-0.5,0);
+        sleep(1050);
         drive.brake();
 
     }

@@ -37,11 +37,11 @@ public class Launcher {
     // Turret limits
     private static final double TURRET_LEFT_LIMIT_DEG = -20.0;
     private static final double TURRET_RIGHT_LIMIT_DEG = 20.0;
-    private static final double TURRET_DEADBAND_DEG = 1.5;
+    private static final double TURRET_DEADBAND_DEG = 4;
 
     // Turret control
     private static final double TURRET_KP = 0.015;
-    private static final double TURRET_MAX_POWER = 0.4;
+    private static final double TURRET_MAX_POWER = 0.3;
     private static final double TURRET_SLEW_RATE = 0.02;
 
     // Flywheel PIDF
