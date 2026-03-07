@@ -8,10 +8,13 @@ import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
+
 @TeleOp(name = "OTOS Test", group = "SensorTests")
 public class OTOS_Test extends LinearOpMode {
 
     private SparkFunOTOS otos;
+    private BasicMecanumDrive drive;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -21,6 +24,7 @@ public class OTOS_Test extends LinearOpMode {
 
         configureOtos();
 
+        drive = new BasicMecanumDrive(hardwareMap);
         telemetry.addLine("OTOS ready.");
         telemetry.addLine("Press START to begin tracking");
         telemetry.update();
@@ -31,6 +35,12 @@ public class OTOS_Test extends LinearOpMode {
         otos.resetTracking();
 
         while (opModeIsActive()) {
+
+            if (gamepad1.back) {drive.resetHeading();}
+            double y = -gamepad1.left_stick_y;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
+            drive.drive(y, x, rx);
 
             SparkFunOTOS.Pose2D pos = otos.getPosition();
 
@@ -57,32 +67,34 @@ public class OTOS_Test extends LinearOpMode {
     }
 
     private void configureOtos() {
-
         telemetry.addLine("Configuring OTOS...");
         telemetry.update();
 
-        // Use inches and degrees
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        // Sensor offset from robot center (CHANGE THIS IF NEEDED)
-        // Example: new Pose2D(-5, 10, -90);
-        SparkFunOTOS.Pose2D offset =
-                new SparkFunOTOS.Pose2D(0, 0, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.71875, 180);
         otos.setOffset(offset);
 
-        // Scaling (leave at 1.0 for testing)
-        otos.setLinearScalar(1.0);
-        otos.setAngularScalar(1.0);
+        otos.setLinearScalar(0.993095997);//0.993095997
+        otos.setAngularScalar(0.994240643);
 
-        // IMU calibration (robot must be still!)
         otos.calibrateImu();
 
-        // Reset tracking & position
         otos.resetTracking();
-        otos.setPosition(new SparkFunOTOS.Pose2D(0, 0, 0));
 
-        telemetry.addLine("OTOS configured.");
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        otos.setPosition(currentPosition);
+
+        // Get the hardware and firmware version
+        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+        otos.getVersionInfo(hwVersion, fwVersion);
+
+        telemetry.addLine("OTOS configured! Press start to get position data!");
+        telemetry.addLine();
+        telemetry.addLine(String.format("OTOS Hardware Version: v%d.%d", hwVersion.major, hwVersion.minor));
+        telemetry.addLine(String.format("OTOS Firmware Version: v%d.%d", fwVersion.major, fwVersion.minor));
         telemetry.update();
     }
 }

@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Commands.OTOSDriveSubsystem;
 
-@Disabled
 @Autonomous(name = "OTOS Drive Test Auto", group = "Test")
 public class PathingAutoTest extends LinearOpMode {
 

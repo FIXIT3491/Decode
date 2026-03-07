@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class OTOSDriveSubsystem {
 
     // === Motors ===
@@ -50,7 +53,7 @@ public class OTOSDriveSubsystem {
 
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
         otos.resetTracking();
-        otos.setPosition(new SparkFunOTOS.Pose2D(0, 0, 0));
+        configureOtos();
     }
 
     // ================== CORE PATHING ==========================
@@ -235,6 +238,30 @@ public class OTOSDriveSubsystem {
 
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private void configureOtos() {
+
+        otos.setLinearUnit(DistanceUnit.INCH);
+        otos.setAngularUnit(AngleUnit.DEGREES);
+
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.71875, 180);
+        otos.setOffset(offset);
+
+        otos.setLinearScalar(0.993095997);//0.993095997
+        otos.setAngularScalar(0.994240643);
+
+        otos.calibrateImu();
+
+        otos.resetTracking();
+
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        otos.setPosition(currentPosition);
+
+        // Get the hardware and firmware version
+        SparkFunOTOS.Version hwVersion = new SparkFunOTOS.Version();
+        SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
+        otos.getVersionInfo(hwVersion, fwVersion);
     }
 }
 
