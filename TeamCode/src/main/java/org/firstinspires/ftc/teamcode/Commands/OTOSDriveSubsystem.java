@@ -1,15 +1,26 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class OTOSDriveSubsystem {
+
+    //CONSTANTS
+    private static final double SPARKFUN_SPEED_GAIN = 0.045;
+    private static final double SPARKFUN_STRAFE_GAIN = 0.25;
+    private static final double SPARKFUN_TURN_GAIN = 0.06;
+    private static final double SPARKFUN_MAX_AUTO_SPEED = 0.5;
+    private static final double SPARKFUN_MAX_AUTO_STRAFE = 0.5;
+    private static final double SPARKFUN_MAX_AUTO_TURN = 0.4;
+
 
     // === Motors ===
     private DcMotorEx frontLeft, frontRight, backLeft, backRight;
@@ -32,19 +43,18 @@ public class OTOSDriveSubsystem {
     private double forwardTargetX;
     private double forwardTargetY;
     private double forwardTargetHeading;
+    private LinearOpMode opMode_ref = null;
 
-    public OTOSDriveSubsystem(HardwareMap hardwareMap) {
-
-
+    public OTOSDriveSubsystem(HardwareMap hardwareMap, LinearOpMode op) {
         frontLeft  = hardwareMap.get(DcMotorEx.class, "frontLeft");
         frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
         backLeft   = hardwareMap.get(DcMotorEx.class, "backLeft");
         backRight  = hardwareMap.get(DcMotorEx.class, "backRight");
 
-
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (DcMotorEx motor : new DcMotorEx[]{
                 frontLeft, frontRight, backLeft, backRight}) {
@@ -54,6 +64,8 @@ public class OTOSDriveSubsystem {
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
         otos.resetTracking();
         configureOtos();
+
+        opMode_ref = op;
     }
 
     // ================== CORE PATHING ==========================
@@ -61,9 +73,7 @@ public class OTOSDriveSubsystem {
                              double targetY,
                              double targetHeading) {
 
-
         SparkFunOTOS.Pose2D pose = getPose();
-
 
         double currentX = pose.y;
         double currentY = pose.x;   //flip if needed for y
@@ -150,12 +160,60 @@ public class OTOSDriveSubsystem {
         return done;
     }
 
+    public void otosDrive(double targetX, double targetY, double targetHeading) {
+        double drive, strafe, turn;
+        double currentRange, targetRange, initialBearing, targetBearing, xError, yError, yawError;
+        double opp, adj;
 
+        Pose2D currentPos = myPosition();
+        xError = targetX-currentPos.x;
+        yError = targetY-currentPos.y;
+        yawError = targetHeading-currentPos.h;
+
+        while(opMode_ref.opModeIsActive() && ((Math.abs(xError) > 0.87) || (Math.abs(yError) > 0.75)
+                || (Math.abs(yawError) > 4)) ) {
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+            drive  = Range.clip(xError * SPARKFUN_SPEED_GAIN, -SPARKFUN_MAX_AUTO_SPEED, SPARKFUN_MAX_AUTO_SPEED);
+            strafe = Range.clip(yError * SPARKFUN_STRAFE_GAIN, -SPARKFUN_MAX_AUTO_STRAFE, SPARKFUN_MAX_AUTO_STRAFE);
+            turn   = Range.clip(yawError * SPARKFUN_TURN_GAIN, -SPARKFUN_MAX_AUTO_TURN, SPARKFUN_MAX_AUTO_TURN);
+
+            opMode_ref.telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            // current x,y swapped due to 90 degree rotation
+            opMode_ref.telemetry.addData("current X coordinate", currentPos.x);
+            opMode_ref.telemetry.addData("current Y coordinate", currentPos.y);
+            opMode_ref.telemetry.addData("current Heading angle", currentPos.h);
+            opMode_ref.telemetry.addData("target X coordinate", targetX);
+            opMode_ref.telemetry.addData("target Y coordinate", targetY);
+            opMode_ref.telemetry.addData("target Heading angle", targetHeading);
+            opMode_ref.telemetry.addData("xError", xError);
+            opMode_ref.telemetry.addData("yError", yError);
+            opMode_ref.telemetry.addData("yawError", yawError);
+            opMode_ref.telemetry.update();
+
+            // Apply desired axes motions to the drivetrain.
+            moveRobotSparkfun(drive, strafe, turn);
+
+            // then recalc error
+            currentPos = myPosition();
+            xError = targetX-currentPos.x;
+            yError = targetY-currentPos.y;
+            yawError = targetHeading-currentPos.h;
+        }
+        moveRobotSparkfun(0,0,0);
+        currentPos = myPosition();
+        opMode_ref.telemetry.addData("current X coordinate", currentPos.x);
+        opMode_ref.telemetry.addData("current Y coordinate", currentPos.y);
+        opMode_ref.telemetry.addData("current Heading angle", currentPos.h);
+        opMode_ref.telemetry.update();
+    }
+    Pose2D myPosition() {
+        SparkFunOTOS.Pose2D pos = otos.getPosition();
+        Pose2D myPos = new Pose2D(pos.y, pos.x, -pos.h);
+        return(myPos);
+    }
 
 
     // ================== DRIVE METHODS ========================
-
-
     public void driveRobotCentric(double y, double x, double rx) {
 
 
@@ -185,12 +243,64 @@ public class OTOSDriveSubsystem {
         backRight.setPower(backRightPower);
     }
 
+    public void moveRobotSparkfun(double x, double y, double yaw) {
+
+        // Calculate wheel powers.
+        double leftFrontPower    =  x +y +yaw;
+        double rightFrontPower   =  x -y -yaw;
+        double leftBackPower     =  x -y +yaw;
+        double rightBackPower    =  x +y -yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        frontLeft.setPower(leftFrontPower);
+        frontRight.setPower(rightFrontPower);
+        backLeft.setPower(leftBackPower);
+        backRight.setPower(rightBackPower);
+        opMode_ref.sleep(10);
+    }
+
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        frontLeft.setPower(leftFrontPower);
+        frontRight.setPower(rightFrontPower);
+        backLeft.setPower(leftBackPower);
+        backRight.setPower(rightBackPower);
+    }
 
     // ================== UTILITIES =============================
     public void resetPose(double x, double y, double heading) {
         otos.setPosition(new SparkFunOTOS.Pose2D(-y, -x, -heading));
     }
-
 
     private SparkFunOTOS.Pose2D getPose() {
         SparkFunOTOS.Pose2D raw = otos.getPosition();
@@ -203,8 +313,29 @@ public class OTOSDriveSubsystem {
         );
     }
 
+    public static class Pose2D {
+        public double x;
+        public double y;
+        public double h;
 
+        public Pose2D() {
+            x = 0.0;
+            y = 0.0;
+            h = 0.0;
+        }
 
+        public Pose2D(double x, double y, double h) {
+            this.x = x;
+            this.y = y;
+            this.h = h;
+        }
+
+        public void set(Pose2D pose) {
+            this.x = pose.x;
+            this.y = pose.y;
+            this.h = pose.h;
+        }
+    }
 
     public double getHeading() {
         return -getPose().h;

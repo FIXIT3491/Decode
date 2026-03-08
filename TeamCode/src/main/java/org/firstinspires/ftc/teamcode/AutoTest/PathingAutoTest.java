@@ -14,7 +14,7 @@ public class PathingAutoTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        drive = new OTOSDriveSubsystem(hardwareMap);
+        drive = new OTOSDriveSubsystem(hardwareMap, this);
 
         telemetry.addLine("Initialized. Waiting for start...");
         telemetry.update();
@@ -28,7 +28,7 @@ public class PathingAutoTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            drive.goToPoint(24,0,0);
+            drive.otosDrive(0, 24, 0);
 
             // === Live Telemetry ===
             telemetry.addData("State", state);
