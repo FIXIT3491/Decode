@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.AutoTest;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Commands.OTOSDriveSubsystem;
 
@@ -20,23 +21,16 @@ public class PathingAutoTest extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        RobotLog.i("Ryan: registerOpMode called");
 
         // Reset pose to 0,0,0
         drive.resetPose(0, 0, 0);
 
         int state = 0;
 
-        while (opModeIsActive()) {
+        drive.otosDrive(0, 24, 0);
 
-            drive.otosDrive(0, 24, 0);
+        RobotLog.i("MyFTCTag", "OpMode stopped.");
 
-            // === Live Telemetry ===
-            telemetry.addData("State", state);
-            telemetry.addData("X", drive.getX());
-            telemetry.addData("Y", drive.getY());
-            telemetry.addData("Heading (deg)",
-                    Math.toDegrees(drive.getHeading()));
-            telemetry.update();
-        }
     }
 }
