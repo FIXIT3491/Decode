@@ -26,13 +26,13 @@ public class AprilTagLockOnTest extends LinearOpMode {
      */
 
     // Proportional gain
-    private static final double kP = 0.006;
+    private static final double kP = 0.01;
 
     // Motor output limits
-    private static final double MAX_POWER = 0.7;
+    private static final double MAX_POWER = 0.2;
 
     // Deadzone in pixels (prevents jitter)
-    private static final double PIXEL_DEADBAND = 10;
+    private static final double PIXEL_DEADBAND = 20;
 
     // Camera resolution
     private static final int IMAGE_WIDTH = 640;

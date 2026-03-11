@@ -29,6 +29,9 @@ public class PathingAutoTest extends LinearOpMode {
         int state = 0;
 
         drive.otosDrive(0, 24, 0);
+        sleep(1000);
+        drive.otosDrive(12,0,0);
+        sleep(1000);
 
         RobotLog.i("MyFTCTag", "OpMode stopped.");
 

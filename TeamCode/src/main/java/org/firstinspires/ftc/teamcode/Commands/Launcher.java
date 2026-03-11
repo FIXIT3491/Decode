@@ -43,12 +43,19 @@ public class Launcher {
     private static final double TURRET_KP = 0.015;
     private static final double TURRET_MAX_POWER = 0.3;
     private static final double TURRET_SLEW_RATE = 0.02;
+    private static final double TURRET_KD = 0.003;
+    private static final double BEARING_ALPHA = 0.2; // smoothing factor -> 0.1 is smoothest, 0.3 is the min
 
     // Flywheel PIDF
     private final double kF = 0.0002;
-    private final double kP = 0.0004;
+    private final double kP = 0.0006;
     private final double kI = 0.0;
     private final double kD = 0.0001;
+
+    // Turret
+    private double filteredBearing = 0;
+    private double lastRawBearing = 0;
+    private double lastTurretError = 0;
 
     /* ===================== RPM PRESETS ===================== */
 
@@ -118,18 +125,39 @@ public class Launcher {
         }
 
         // Horizontal aiming
-        double error = -tag.ftcPose.bearing; // remove - if turns wrong way
+        filteredBearing =
+                BEARING_ALPHA * tag.ftcPose.bearing +
+                        (1 - BEARING_ALPHA) * filteredBearing;
+
+        double error = -filteredBearing;
+
+        double rawBearing = tag.ftcPose.bearing;
+
+        // Reject vision spikes
+        if (Math.abs(rawBearing - lastRawBearing) > 15) {
+            rawBearing = lastRawBearing;
+        }
+
+        filteredBearing =
+                BEARING_ALPHA * rawBearing +
+                        (1 - BEARING_ALPHA) * filteredBearing;
+
+        lastRawBearing = rawBearing;
 
         if (Math.abs(error) < TURRET_DEADBAND_DEG) {
             applyTurretPower(0);
             return;
         }
 
+        double derivative = error - lastTurretError;
+
         double rawPower = Range.clip(
-                error * TURRET_KP,
+                (error * TURRET_KP) + (derivative * TURRET_KD),
                 -TURRET_MAX_POWER,
                 TURRET_MAX_POWER
         );
+
+        lastTurretError = error;
 
         double smoothPower = slew(rawPower, lastTurretPower, TURRET_SLEW_RATE);
         lastTurretPower = smoothPower;
