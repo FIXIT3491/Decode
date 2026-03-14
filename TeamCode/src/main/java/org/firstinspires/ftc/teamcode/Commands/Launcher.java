@@ -4,11 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
 
@@ -30,9 +33,12 @@ public class Launcher {
 
     // Turret encoder
     private static final double TURRET_TICKS_PER_REV = 537.7;
-    private static final double TURRET_GEAR_RATIO = 1.0;
+    private static final double TURRET_GEAR_RATIO = 2.0;
     private static final double DEGREES_PER_TICK =
             360.0 / (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO);
+
+    private static final double TICKS_PER_DEGREE =
+            (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO) / 360.0;
 
     // Turret limits
     private static final double TURRET_LEFT_LIMIT_DEG = -20.0;
@@ -80,6 +86,10 @@ public class Launcher {
 
     private int trackedTagId = -1;
 
+    private ElapsedTime timer = new ElapsedTime();
+
+    private double lastTime = 0;
+
     /* ===================== INIT ===================== */
 
     public void init(HardwareMap hardwareMap) {
@@ -113,6 +123,33 @@ public class Launcher {
     }
 
     /* ===================== TURRET TRACKING ===================== */
+    public void setTargetForTurret() {
+
+        AprilTagDetection tag = getTrackedTag();
+        if (tag == null) return;
+
+        double bearingDeg = tag.ftcPose.bearing;
+
+        // Convert degrees to encoder ticks
+        double ticksPerDegree = 1.0 / DEGREES_PER_TICK;
+        int ticksToMove = (int)(tag.ftcPose.bearing * TICKS_PER_DEGREE);
+
+        int currentPos = turret.getCurrentPosition();
+        int targetPos = currentPos + ticksToMove;
+
+        // Limit turret rotation
+        double targetAngle = getTurretAngleDeg() + bearingDeg;
+
+        if (targetAngle < TURRET_LEFT_LIMIT_DEG ||
+                targetAngle > TURRET_RIGHT_LIMIT_DEG) {
+            return;
+        }
+
+        turret.setTargetPosition(-targetPos);
+        turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        turret.setPower(0.3);
+    }
+
 
     public void updateTurretFromAprilTag() {
 
@@ -246,6 +283,10 @@ public class Launcher {
 
     public void updateFlywheel() {
 
+        double currentTime = timer.milliseconds();
+        double dt = currentTime - lastTime;
+        lastTime = currentTime;
+
         if (targetRPM == 0) {
             flywheel.setPower(0);
             return;
@@ -261,6 +302,8 @@ public class Launcher {
                         (kD * (error - lastError));
 
         lastError = error;
+
+        RobotLog.i("RyanTag4 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
 
         flywheel.setPower(Range.clip(output, 0, 1));
     }

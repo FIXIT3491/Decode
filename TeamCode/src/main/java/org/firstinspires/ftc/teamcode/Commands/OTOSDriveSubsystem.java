@@ -17,7 +17,7 @@ public class OTOSDriveSubsystem {
     //CONSTANTS
     private static final double SPARKFUN_SPEED_GAIN = 0.04;
     private static final double SPARKFUN_STRAFE_GAIN = 0.20;
-    private static final double SPARKFUN_TURN_GAIN = 0.06;
+    private static final double SPARKFUN_TURN_GAIN = 0.05;
     private static final double SPARKFUN_MAX_AUTO_SPEED = 0.4;
     private static final double SPARKFUN_MAX_AUTO_STRAFE = 0.4;
     private static final double SPARKFUN_MAX_AUTO_TURN = 0.3;
@@ -181,7 +181,7 @@ public class OTOSDriveSubsystem {
             strafe = Range.clip(xError * SPARKFUN_STRAFE_GAIN, -SPARKFUN_MAX_AUTO_STRAFE, SPARKFUN_MAX_AUTO_STRAFE);
             turn   = -Range.clip(yawError * SPARKFUN_TURN_GAIN, -SPARKFUN_MAX_AUTO_TURN, SPARKFUN_MAX_AUTO_TURN);
 
-            RobotLog.i("RyanTag3 x = %f, y = %f, heading = %f, Ex = %f, Ey = %f, Eyaw = %f", getX(), getY(), getHeading(), xError, yError, yawError);
+            RobotLog.i("RyanTag5 x = %f, y = %f, heading = %f, Ex = %f, Ey = %f, Eyaw = %f", getX(), getY(), getHeading(), xError, yError, yawError);
             //RobotLog.i("x = " + (double) getX());
             opMode_ref.telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             // current x,y swapped due to 90 degree rotation
@@ -347,15 +347,9 @@ public class OTOSDriveSubsystem {
         }
     }
 
-    public double getHeading() {
-        return getPose().h;
-    }
-
-    public double getX() { return getPose().x; }
-
-    public double getY() {
-        return getPose().y;
-    }
+    public double getHeading() { return getPose().h; }
+    public double getX() { return -getPose().x; }
+    public double getY() { return getPose().y; }
 
     public void stop() {
         frontLeft.setPower(0);

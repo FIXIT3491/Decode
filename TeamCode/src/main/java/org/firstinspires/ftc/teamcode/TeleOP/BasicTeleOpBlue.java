@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
@@ -146,6 +147,7 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* ===================== LAUNCHER CONTROL ===================== */
         launcher.updateTurretFromAprilTag();
+        RobotLog.i("Ryan: registerOpMode called");
 
         if (gamepad2.x) {
             launcher.setFlywheelRPM(3200);
