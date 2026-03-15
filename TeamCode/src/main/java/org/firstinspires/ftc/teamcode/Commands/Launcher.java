@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import static android.os.SystemClock.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -130,26 +132,28 @@ public class Launcher {
 
         double bearingDeg = tag.ftcPose.bearing;
 
-        // Convert degrees to encoder ticks
-        double ticksPerDegree = 1.0 / DEGREES_PER_TICK;
-        int ticksToMove = (int)(tag.ftcPose.bearing * TICKS_PER_DEGREE);
+        int ticksToMove = (int)(bearingDeg * TICKS_PER_DEGREE);
 
         int currentPos = turret.getCurrentPosition();
         int targetPos = currentPos + ticksToMove;
 
-        // Limit turret rotation
         double targetAngle = getTurretAngleDeg() + bearingDeg;
 
-        if (targetAngle < TURRET_LEFT_LIMIT_DEG ||
-                targetAngle > TURRET_RIGHT_LIMIT_DEG) {
+        if (targetAngle < TURRET_LEFT_LIMIT_DEG || targetAngle > TURRET_RIGHT_LIMIT_DEG) {
             return;
         }
 
-        turret.setTargetPosition(-targetPos);
+        turret.setTargetPosition(targetPos);
         turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         turret.setPower(0.3);
-    }
 
+        while (turret.isBusy()) {
+            sleep(10);
+        }
+
+        turret.setPower(0);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
 
     public void updateTurretFromAprilTag() {
 
