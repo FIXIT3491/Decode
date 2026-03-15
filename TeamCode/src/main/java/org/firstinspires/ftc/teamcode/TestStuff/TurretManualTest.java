@@ -24,9 +24,15 @@ public class TurretManualTest extends LinearOpMode {
 
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         waitForStart();
 
+        turret.setTargetPosition(-5);
+        turret.setPower(0.4);
+        sleep(2000);
+
+/*
         moveTurretDegrees(10);
         sleep(2000);
 
@@ -36,7 +42,7 @@ public class TurretManualTest extends LinearOpMode {
         moveTurretDegrees(20);
         sleep(2000);
 
-        moveTurretDegrees(-20);
+        moveTurretDegrees(-20); */
     }
 
     public void moveTurretDegrees(double degrees) {
@@ -46,19 +52,9 @@ public class TurretManualTest extends LinearOpMode {
         int currentPos = turret.getCurrentPosition();
         int targetPos = currentPos + ticksToMove;
 
-        telemetry.addData("Current", currentPos);
-        telemetry.addData("Target", targetPos);
-        telemetry.update();
-
         turret.setTargetPosition(targetPos);
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         turret.setPower(0.3);
-
-        while (opModeIsActive() && turret.isBusy()) {
-            telemetry.addData("Turret Pos", turret.getCurrentPosition());
-            telemetry.update();
-            sleep(10);
-        }
 
         turret.setPower(0);
         turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
