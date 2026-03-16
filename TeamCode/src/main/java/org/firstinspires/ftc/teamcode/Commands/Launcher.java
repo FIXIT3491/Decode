@@ -43,15 +43,15 @@ public class Launcher {
             (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO) / 360.0;
 
     // Turret limits
-    private static final double TURRET_LEFT_LIMIT_DEG = -20.0;
-    private static final double TURRET_RIGHT_LIMIT_DEG = 20.0;
+    private static final double TURRET_LEFT_LIMIT_DEG = -60.0;
+    private static final double TURRET_RIGHT_LIMIT_DEG = 60.0;
     private static final double TURRET_DEADBAND_DEG = 4;
 
     // Turret control
-    private static final double TURRET_KP = 0.015;
-    private static final double TURRET_MAX_POWER = 0.3;
-    private static final double TURRET_SLEW_RATE = 0.02;
-    private static final double TURRET_KD = 0.003;
+    private static final double TURRET_KP = 0.018;
+    private static final double TURRET_MAX_POWER = 0.5;
+    private static final double TURRET_SLEW_RATE = 0.05;
+    private static final double TURRET_KD = 0.006;
     private static final double BEARING_ALPHA = 0.2; // smoothing factor -> 0.1 is smoothest, 0.3 is the min
 
     // Flywheel PIDF
@@ -204,10 +204,10 @@ public class Launcher {
         lastTurretPower = smoothPower;
 
         // Respect mechanical limits
-        if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
+        /*if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
                 (currentAngle >= TURRET_RIGHT_LIMIT_DEG && smoothPower > 0)) {
             smoothPower = 0;
-        }
+        }*/
 
         turret.setPower(smoothPower);
     }
