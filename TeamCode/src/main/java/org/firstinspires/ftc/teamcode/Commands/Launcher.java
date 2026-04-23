@@ -143,18 +143,17 @@ public class Launcher {
             return;
         }
 
-        turret.setTargetPosition(targetPos);
-        turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        turret.setPower(0.3);
-
-        while (turret.isBusy()) {
-            sleep(10);
+        if (turret.isBusy()) {
+            turret.setTargetPosition(targetPos);
+            turret.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            turret.setPower(0.3);
+        } else {
+            turret.setPower(0);
+            turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
-
-        turret.setPower(0);
-        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
+    // Used in Tele
     public void updateTurretFromAprilTag() {
 
         AprilTagDetection tag = getTrackedTag();
@@ -307,7 +306,7 @@ public class Launcher {
 
         lastError = error;
 
-        RobotLog.i("RyanTag4 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
+        RobotLog.i("RyanTag5 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
 
         flywheel.setPower(Range.clip(output, 0, 1));
     }

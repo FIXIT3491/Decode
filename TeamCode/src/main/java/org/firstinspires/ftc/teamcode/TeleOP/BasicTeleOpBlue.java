@@ -146,8 +146,7 @@ public class BasicTeleOpBlue extends OpMode {
         boolean launcherLB = gamepad2.left_bumper;
 
         /* ===================== LAUNCHER CONTROL ===================== */
-        launcher.updateTurretFromAprilTag();
-        RobotLog.i("Ryan: registerOpMode called");
+        launcher.setTargetForTurret();
 
         if (gamepad2.x) {
             launcher.setFlywheelRPM(3200);
@@ -266,6 +265,8 @@ public class BasicTeleOpBlue extends OpMode {
                 kickState = 0;
             }
         }
+
+
 
         /* -------- Parking -------- */
         if (gamepad1.dpad_down) {
