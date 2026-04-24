@@ -75,7 +75,7 @@ public class WheelRotation {
 
         ElapsedTime timer = new ElapsedTime();
 
-        while (ferrisMotor.isBusy()) {
+        if (ferrisMotor.isBusy()) {
 
             boolean timeArmed = timer.milliseconds() > MAGNET_ARM_DELAY_MS;
             boolean nearTarget = deltaDegrees <= MAGNET_ACTIVE_WINDOW_DEG;
