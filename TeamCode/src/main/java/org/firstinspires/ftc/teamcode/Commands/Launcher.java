@@ -67,9 +67,9 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 3200; // <4 ft
-    private static final double MID_RPM   = 3800; // 4–7 ft
-    private static final double FAR_RPM   = 4200; // >7 ft
+    private static final double CLOSE_RPM = 2950; // <4 ft
+    private static final double MID_RPM   = 3900; // 4–7 ft
+    private static final double FAR_RPM   = 4000; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
