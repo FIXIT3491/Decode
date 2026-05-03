@@ -109,7 +109,7 @@ public class Launcher {
         turretZeroTicks = turret.getCurrentPosition();
 
         hood = hardwareMap.get(Servo.class, "hood");
-        hood.setPosition(FAR_HOOD);
+        //hood.setPosition(FAR_HOOD);
 
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(

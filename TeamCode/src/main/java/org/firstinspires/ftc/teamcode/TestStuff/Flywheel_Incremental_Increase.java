@@ -66,12 +66,19 @@ public class Flywheel_Incremental_Increase extends OpMode {
 
         // Flywheel control based on toggle
         if (flywheelOn) {
+            flywheel.setVelocity((rpm/60) * 28); // math to get the angular unit
+        } else {
+            flywheel.setPower(0);
+        }
+
+        /*
+        if (flywheelOn) {
             launcher.setFlywheelRPM(rpm);
         } else {
             launcher.stopFlywheel();
         }
 
-        launcher.updateFlywheel();
+        launcher.updateFlywheel(); */
         telemetry.addData("Flywheel Target RPM:", rpm);
         telemetry.addData("Actual RPM: ", flywheel.getVelocity());
         telemetry.addData("Flywheel On:", flywheelOn);
