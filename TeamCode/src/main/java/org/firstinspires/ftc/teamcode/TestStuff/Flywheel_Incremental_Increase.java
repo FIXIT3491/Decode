@@ -27,7 +27,7 @@ public class Flywheel_Incremental_Increase extends OpMode {
 
     @Override
     public void init() {
-        launcher.init(hardwareMap);
+        //launcher.init(hardwareMap);
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
     }
 
@@ -65,23 +65,25 @@ public class Flywheel_Incremental_Increase extends OpMode {
         prevB = gamepad1.b;
 
         // Flywheel control based on toggle
+        flywheel.setPower(1);
+        /*
         if (flywheelOn) {
             flywheel.setVelocity((rpm/60) * 28); // math to get the angular unit
         } else {
             flywheel.setPower(0);
         }
 
-        /*
+
         if (flywheelOn) {
             launcher.setFlywheelRPM(rpm);
         } else {
             launcher.stopFlywheel();
         }
 
-        launcher.updateFlywheel(); */
+        launcher.updateFlywheel();
         telemetry.addData("Flywheel Target RPM:", rpm);
         telemetry.addData("Actual RPM: ", flywheel.getVelocity());
         telemetry.addData("Flywheel On:", flywheelOn);
-        telemetry.update();
+        telemetry.update(); */
     }
 }

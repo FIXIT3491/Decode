@@ -284,6 +284,7 @@ public class Launcher {
         return (flywheel.getVelocity() / FLYWHEEL_TICKS_PER_REV) * 60.0;
     }
 
+    // uses setPower... might need to change to setVelocity
     public void updateFlywheel() {
 
         double currentTime = timer.milliseconds();
