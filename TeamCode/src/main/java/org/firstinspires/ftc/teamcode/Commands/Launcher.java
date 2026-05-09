@@ -109,7 +109,7 @@ public class Launcher {
         turretZeroTicks = turret.getCurrentPosition();
 
         hood = hardwareMap.get(Servo.class, "hood");
-        //hood.setPosition(FAR_HOOD);
+        hood.setPosition(FAR_HOOD);
 
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(
@@ -281,7 +281,7 @@ public class Launcher {
     }
 
     public double getCurrentRPM() {
-        return (flywheel.getVelocity() / FLYWHEEL_TICKS_PER_REV) * 60.0;
+        return (flywheel.getVelocity() / 60.0) * FLYWHEEL_TICKS_PER_REV;
     }
 
     // uses setPower... might need to change to setVelocity
@@ -307,7 +307,7 @@ public class Launcher {
 
         lastError = error;
 
-        RobotLog.i("RyanTag5 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
+        RobotLog.i("RyanTag4 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
 
         flywheel.setPower(Range.clip(output, 0, 1));
     }

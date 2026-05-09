@@ -116,8 +116,8 @@ public class BasicTeleOpBlue extends OpMode {
         kick.setPosition(KICK_DOWN);
         kick2.setPosition(KICK2_DOWN);
 
-        park1.setPosition(0.7);
-        park2.setPosition(0.7);
+        park1.setPosition(0.61);
+        park2.setPosition(0.19);
 
         hood = hardwareMap.get(Servo.class, "hood");
 
@@ -270,12 +270,12 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* -------- Parking -------- */
         if (gamepad1.dpad_down) {
-            park1.setPosition(0.2);
-            park2.setPosition(0.2);
+            park1.setPosition(0.61);// bl
+            park2.setPosition(0.19);// fr
             parkTimer.reset();
         } else if (gamepad1.dpad_up) {
-            park1.setPosition(0.7);
-            park2.setPosition(0.7);
+            park1.setPosition(0.81); //bl
+            park2.setPosition(0.30); //fr
         }
 
         /* -------- Edge Updates -------- */
