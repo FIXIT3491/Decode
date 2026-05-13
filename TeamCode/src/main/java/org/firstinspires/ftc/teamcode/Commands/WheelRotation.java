@@ -21,6 +21,14 @@ public class WheelRotation {
     // Encoder constants
     private static final double COUNTS_PER_REV = 537.7;  // goBILDA 312RPM 1:1
     private static final double TICKS_PER_DEGREE = COUNTS_PER_REV / 360.0;
+    private boolean isRotating = false;
+    private ElapsedTime rotateTimer = new ElapsedTime();
+
+    private static final double TOLERANCE_DEG = 0.5;
+    private static final double MIN_POWER = 0.25;
+
+    private static final double MAGNET_ARM_DELAY_MS = 250;
+    private static final double MAGNET_ACTIVE_WINDOW_DEG = 5;
     private static double TUNER = 1.0;
     private Telemetry telemetry;
     private double targetAngleDeg = 0.0;
@@ -42,23 +50,17 @@ public class WheelRotation {
 
     public void rotateToAngle(double targetDegrees, double maxPower) {
 
-        final double TOLERANCE_DEG = 0.5;
-        final double MIN_POWER = 0.25;
-
-        final double MAGNET_ARM_DELAY_MS = 250;
-        final double MAGNET_ACTIVE_WINDOW_DEG = 5;
-
-        targetDegrees = normalizeAngle(targetDegrees);
         targetDegrees = normalizeAngle(targetDegrees);
         targetAngleDeg = targetDegrees;
 
-
         double currentDegrees = normalizeAngle(getCurrentDegrees());
 
-        // Only go in one direction
+        // Only rotate forward
         double deltaDegrees = (targetDegrees - currentDegrees + 360.0) % 360.0;
 
-        if (deltaDegrees <= TOLERANCE_DEG) return;
+        if (deltaDegrees <= TOLERANCE_DEG) {
+            return;
+        }
 
         int deltaTicks = (int) (deltaDegrees * TICKS_PER_DEGREE * TUNER);
         int targetTicks = ferrisMotor.getCurrentPosition() + deltaTicks;
@@ -73,23 +75,45 @@ public class WheelRotation {
 
         ferrisMotor.setPower(power);
 
-        ElapsedTime timer = new ElapsedTime();
+        rotateTimer.reset();
+        isRotating = true;
+    }
 
-        if (ferrisMotor.isBusy()) {
+    public void update() {
 
-            boolean timeArmed = timer.milliseconds() > MAGNET_ARM_DELAY_MS;
-            boolean nearTarget = deltaDegrees <= MAGNET_ACTIVE_WINDOW_DEG;
+        if (!isRotating) return;
 
-            if (timeArmed && nearTarget && isMagnetDetected()) {
-                ferrisMotor.setPower(0);
-                ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                return;
-            }
+        double currentDegrees = normalizeAngle(getCurrentDegrees());
+
+        double deltaDegrees =
+                (targetAngleDeg - currentDegrees + 360.0) % 360.0;
+
+        boolean timeArmed =
+                rotateTimer.milliseconds() > MAGNET_ARM_DELAY_MS;
+
+        boolean nearTarget =
+                deltaDegrees <= MAGNET_ACTIVE_WINDOW_DEG;
+
+        // Magnet correction
+        if (timeArmed && nearTarget && isMagnetDetected()) {
+
+            ferrisMotor.setPower(0);
+
+            ferrisMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            isRotating = false;
+            return;
         }
 
-        ferrisMotor.setPower(0);
-        ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Normal completion
+        if (!ferrisMotor.isBusy()) {
+
+            ferrisMotor.setPower(0);
+            ferrisMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            isRotating = false;
+        }
     }
 
 
@@ -119,6 +143,10 @@ public class WheelRotation {
 
     public void adjustWheel(int modifier) {
         rotateToAngle(getCurrentDegrees() + (5 * modifier), 0.8);
+    }
+
+    public boolean isBusy() {
+        return isRotating;
     }
 
     public void updateTelemetry() {

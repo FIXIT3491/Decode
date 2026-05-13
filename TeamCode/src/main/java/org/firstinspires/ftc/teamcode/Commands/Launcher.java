@@ -211,6 +211,53 @@ public class Launcher {
         turret.setPower(smoothPower);
     }
 
+    public void turretBasicTest () {
+
+        AprilTagDetection tag = getTrackedTag();
+
+        // No tag detected -> return turret to straight ahead
+        if (tag == null) {
+
+            double currentAngle = getTurretAngleDeg();
+
+            // Small deadband so it doesn't jitter forever
+            if (Math.abs(currentAngle) < 2.0) {
+                turret.setPower(0);
+            }
+            // Turret is left of center -> move right
+            else if (currentAngle < 0) {
+                turret.setPower(0.12);
+            }
+            // Turret is right of center -> move left
+            else {
+                turret.setPower(-0.12);
+            }
+
+            return;
+        }
+
+        // Tag tracking logic
+        if (tag.ftcPose.bearing > 3.5) {
+
+            if (tag.ftcPose.bearing > 10) {
+                turret.setPower(-0.2);
+            } else {
+                turret.setPower(-0.1);
+            }
+
+        } else if (tag.ftcPose.bearing < -3.5) {
+
+            if (tag.ftcPose.bearing < -10) {
+                turret.setPower(0.2);
+            } else {
+                turret.setPower(0.1);
+            }
+
+        } else {
+            turret.setPower(0);
+        }
+    }
+
     private void applyTurretPower(double power) {
         lastTurretPower = power;
         turret.setPower(power);

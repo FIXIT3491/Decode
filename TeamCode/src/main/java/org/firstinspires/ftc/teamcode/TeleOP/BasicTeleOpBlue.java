@@ -146,7 +146,7 @@ public class BasicTeleOpBlue extends OpMode {
         boolean launcherLB = gamepad2.left_bumper;
 
         /* ===================== LAUNCHER CONTROL ===================== */
-        launcher.setTargetForTurret();
+        launcher.turretBasicTest();
 
         if (gamepad2.x) {
             launcher.setFlywheelRPM(3200);
@@ -176,7 +176,7 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* ===================== INTAKE MODE ===================== */
 
-        if (rt && !lastRT) {
+        if (rt && !lastRT && !wheel.isBusy()) {
             wheel.rotateToAngle(37, 0.3);
             intakeCounter = 1;
             intakeActive = true;
@@ -184,7 +184,7 @@ public class BasicTeleOpBlue extends OpMode {
 
         boolean intakeDetected = isGreenOrPurple(intakeColor);
 
-        if (rt && intakeDetected && !lastIntakeColor && intakeActive) {
+        if (rt && intakeDetected && !lastIntakeColor && intakeActive && !wheel.isBusy()) {
             switch (intakeCounter) {
                 case 0: wheel.rotateToAngle(37, 0.4); break;
                 case 1: wheel.rotateToAngle(151, 0.4); break;
@@ -193,7 +193,7 @@ public class BasicTeleOpBlue extends OpMode {
             intakeCounter = (intakeCounter + 1) % 3;
         }
 
-        if (!rt && intakeActive) {
+        if (!rt && intakeActive && !wheel.isBusy()) {
             wheel.rotateToAngle(357, 0.3);
             intakeActive = false;
             intakeCounter = 0;
@@ -201,7 +201,7 @@ public class BasicTeleOpBlue extends OpMode {
 
         /* ===================== OUTTAKE MODE ===================== */
 
-        if (lt && !lastLT) {
+        if (lt && !lastLT && !wheel.isBusy()) {
             wheel.rotateToAngle(90, 0.3);
             outtakeCounter = 1;
             outtakeActive = true;
@@ -209,7 +209,7 @@ public class BasicTeleOpBlue extends OpMode {
 
         boolean outtakeDetected = isGreenOrPurple(outtakeColor);
 
-        if (lt && outtakeDetected && !lastOuttakeColor && outtakeActive) {
+        if (lt && outtakeDetected && !lastOuttakeColor && outtakeActive && !wheel.isBusy()) {
             switch (outtakeCounter) {
                 case 0: wheel.rotateToAngle(107, 0.4); break;
                 case 1: wheel.rotateToAngle(219, 0.4); break;
@@ -218,7 +218,7 @@ public class BasicTeleOpBlue extends OpMode {
             outtakeCounter = (outtakeCounter + 1) % 3;
         }
 
-        if (!lt && outtakeActive) {
+        if (!lt && outtakeActive && !wheel.isBusy()) {
             wheel.rotateToAngle(357, 0.3);
             outtakeActive = false;
             outtakeCounter = 0;
@@ -253,7 +253,7 @@ public class BasicTeleOpBlue extends OpMode {
                 kickState = 3;
             }
 
-            if (kickState == 3 && kickTimer.seconds() > 0.4) {
+            if (kickState == 3 && kickTimer.seconds() > 0.4 && !wheel.isBusy()) {
 
                 switch (kickWheelCounter) {
                     case 0: wheel.rotateToAngle((122 + offset), 0.3); break;
@@ -288,6 +288,7 @@ public class BasicTeleOpBlue extends OpMode {
         lastOuttakeColor = outtakeDetected;
 
         wheel.updateTelemetry();
+        wheel.update();
 
         telemetry.addData("Launcher Auto", launcherAuto);
         telemetry.addData("Flywheel RPM", "%.0f", launcher.getCurrentRPM());
