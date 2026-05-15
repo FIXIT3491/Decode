@@ -328,7 +328,7 @@ public class Launcher {
     }
 
     public double getCurrentRPM() {
-        return (flywheel.getVelocity() / 60.0) * FLYWHEEL_TICKS_PER_REV;
+        return (flywheel.getVelocity() / FLYWHEEL_TICKS_PER_REV) * 60.0;
     }
 
     // uses setPower... might need to change to setVelocity
@@ -354,7 +354,7 @@ public class Launcher {
 
         lastError = error;
 
-        RobotLog.i("RyanTag4 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
+        RobotLog.i("RyanTag5 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
 
         flywheel.setPower(Range.clip(output, 0, 1));
     }
