@@ -55,10 +55,10 @@ public class Launcher {
     private static final double BEARING_ALPHA = 0.2; // smoothing factor -> 0.1 is smoothest, 0.3 is the min
 
     // Flywheel PIDF
-    private final double kF = 0.0002;
-    private final double kP = 0.0006;
-    private final double kI = 0.0;
-    private final double kD = 0.0001;
+    private final double kF = 0.0002;//0.0002
+    private final double kP = 0.001;//0.0006
+    private final double kI = 0.0;//0.0
+    private final double kD = 0.000;//0.0001
 
     // Turret
     private double filteredBearing = 0;
@@ -99,6 +99,7 @@ public class Launcher {
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
 
         turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
         turret.setDirection(DcMotorEx.Direction.REVERSE);
@@ -331,8 +332,56 @@ public class Launcher {
         return (flywheel.getVelocity() / FLYWHEEL_TICKS_PER_REV) * 60.0;
     }
 
-    // uses setPower... might need to change to setVelocity
+    // This includes the external PID which might overlap with the internal REV PID
+    // this is also a new updated version
     public void updateFlywheel() {
+
+        double currentTime = timer.milliseconds();
+        double dt = (currentTime - lastTime) / 1000.0; // seconds
+        lastTime = currentTime;
+
+        if (targetRPM == 0) {
+            flywheel.setVelocity(0);
+            integral = 0;
+            lastError = 0;
+            return;
+        }
+
+        // Current velocity in RPM
+        double currentRPM = getCurrentRPM();
+
+        // PID calculations
+        double error = targetRPM - currentRPM;
+
+        integral += error * dt;
+        integral = Range.clip(integral, -1500, 1500);
+
+        double derivative = 0;
+        if (dt > 0) {
+            derivative = (error - lastError) / dt;
+        }
+
+        // PIDF correction in RPM
+        double correction =
+                (kP * error) +
+                        (kI * integral) +
+                        (kD * derivative);
+
+        // Final target RPM after correction
+        double commandedRPM = targetRPM + correction;
+
+        // Convert RPM to ticks/sec
+        double ticksPerSecond =
+                (commandedRPM * FLYWHEEL_TICKS_PER_REV) / 60.0;
+
+        flywheel.setVelocity(ticksPerSecond);
+
+        lastError = error;
+
+        RobotLog.i("RyanTag7 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
+    }
+
+    public void updateFlywheelPower() {
 
         double currentTime = timer.milliseconds();
         double dt = currentTime - lastTime;
@@ -354,7 +403,7 @@ public class Launcher {
 
         lastError = error;
 
-        RobotLog.i("RyanTag5 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
+        RobotLog.i("RyanTag6 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
 
         flywheel.setPower(Range.clip(output, 0, 1));
     }
