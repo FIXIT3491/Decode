@@ -4,6 +4,7 @@ import static android.os.SystemClock.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -100,6 +101,14 @@ public class Launcher {
         flywheel.setDirection(DcMotorEx.Direction.REVERSE);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        PIDFCoefficients pidfOrig = flywheel.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        // Change coefficients using methods included with DcMotorEx class.
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kP, kI, kD, kF);
+        flywheel.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
+
+        // Re-read coefficients and verify change.
+        PIDFCoefficients pidfModified = flywheel.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
         turret.setDirection(DcMotorEx.Direction.REVERSE);
@@ -332,6 +341,22 @@ public class Launcher {
         return (flywheel.getVelocity() / FLYWHEEL_TICKS_PER_REV) * 60.0;
     }
 
+    public void updateFlywheel() {
+
+        if (targetRPM == 0) {
+            flywheel.setVelocity(0);
+            return;
+        }
+
+        double ticksPerSecond =
+                (targetRPM * FLYWHEEL_TICKS_PER_REV) / 60.0;
+
+        flywheel.setVelocity(ticksPerSecond);
+
+        RobotLog.i("RyanTag6 actualRPM=%f targetRPM=%f", getCurrentRPM(), targetRPM);
+    }
+
+    /*
     // This includes the external PID which might overlap with the internal REV PID
     // this is also a new updated version
     public void updateFlywheel() {
@@ -379,7 +404,7 @@ public class Launcher {
         lastError = error;
 
         RobotLog.i("RyanTag7 actual = %f, target = %f, dt = %f", getCurrentRPM(), targetRPM, currentTime);
-    }
+    } */
 
     public void updateFlywheelPower() {
 
