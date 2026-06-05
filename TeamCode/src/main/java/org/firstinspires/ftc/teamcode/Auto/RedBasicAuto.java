@@ -68,7 +68,7 @@ public class RedBasicAuto extends LinearOpMode {
         launcher.setTrackedTagId(20);
         timer.reset();
 
-        launcher.updateTurretFromAprilTag();
+        /*launcher.updateTurretFromAprilTag();
 
         //move back and shoot
         drive.resetHeading();
@@ -240,7 +240,7 @@ public class RedBasicAuto extends LinearOpMode {
             drive.drive(0.4,0,0);
             sleep(1500);
             drive.brake();
-        }
+        }*/
     }
 
     private boolean isGreenOrPurple(ColorSensor sensor) {

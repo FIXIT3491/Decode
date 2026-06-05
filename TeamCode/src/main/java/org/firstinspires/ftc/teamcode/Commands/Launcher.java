@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -22,7 +23,7 @@ public class Launcher {
 
     /* ===================== HARDWARE ===================== */
     private DcMotorEx flywheel;
-    private DcMotorEx turret;
+    private CRServo turret;
     private Servo hood;
 
     /* ===================== VISION ===================== */
@@ -110,13 +111,17 @@ public class Launcher {
         // Re-read coefficients and verify change.
         PIDFCoefficients pidfModified = flywheel.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
+        turret = hardwareMap.get(CRServo.class, "turret");
+        turret.setDirection(CRServo.Direction.REVERSE);
+
+        /*
         turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
         turret.setDirection(DcMotorEx.Direction.REVERSE);
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        turretZeroTicks = turret.getCurrentPosition();
+        turretZeroTicks = turret.getCurrentPosition();*/
 
         hood = hardwareMap.get(Servo.class, "hood");
         hood.setPosition(FAR_HOOD);
@@ -135,7 +140,7 @@ public class Launcher {
     }
 
     /* ===================== TURRET TRACKING ===================== */
-    public void setTargetForTurret() {
+    /*public void setTargetForTurret() {
 
         AprilTagDetection tag = getTrackedTag();
         if (tag == null) return;
@@ -161,10 +166,10 @@ public class Launcher {
             turret.setPower(0);
             turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
-    }
+    }*/
 
     // Used in Tele
-    public void updateTurretFromAprilTag() {
+    /*public void updateTurretFromAprilTag() {
 
         AprilTagDetection tag = getTrackedTag();
         double currentAngle = getTurretAngleDeg();
@@ -213,40 +218,23 @@ public class Launcher {
         lastTurretPower = smoothPower;
 
         // Respect mechanical limits
-        /*if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
-                (currentAngle >= TURRET_RIGHT_LIMIT_DEG && smoothPower > 0)) {
-            smoothPower = 0;
-        }*/
+        //if ((currentAngle <= TURRET_LEFT_LIMIT_DEG && smoothPower < 0) ||
+           //     (currentAngle >= TURRET_RIGHT_LIMIT_DEG && smoothPower > 0)) {
+          //  smoothPower = 0;
+      //  }
 
         turret.setPower(smoothPower);
-    }
+    }*/
 
-    public void turretBasicTest () {
+    public void turretBasicTest() {
 
         AprilTagDetection tag = getTrackedTag();
 
-        // No tag detected -> return turret to straight ahead
         if (tag == null) {
-
-            double currentAngle = getTurretAngleDeg();
-
-            // Small deadband so it doesn't jitter forever
-            if (Math.abs(currentAngle) < 2.0) {
-                turret.setPower(0);
-            }
-            // Turret is left of center -> move right
-            else if (currentAngle < 0) {
-                turret.setPower(0.12);
-            }
-            // Turret is right of center -> move left
-            else {
-                turret.setPower(-0.12);
-            }
-
+            turret.setPower(0);
             return;
         }
 
-        // Tag tracking logic
         if (tag.ftcPose.bearing > 3.5) {
 
             if (tag.ftcPose.bearing > 10) {
@@ -273,9 +261,9 @@ public class Launcher {
         turret.setPower(power);
     }
 
-    private double getTurretAngleDeg() {
+    /*private double getTurretAngleDeg() {
         return (turret.getCurrentPosition() - turretZeroTicks) * DEGREES_PER_TICK;
-    }
+    }*/
 
     /* ===================== FLYWHEEL CONTROL ===================== */
 

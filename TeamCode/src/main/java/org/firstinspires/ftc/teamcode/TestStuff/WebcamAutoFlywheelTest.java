@@ -32,7 +32,7 @@ public class WebcamAutoFlywheelTest extends LinearOpMode {
         // launcher.setTrackedTagId(-1); // Track any tag
 
         while (opModeIsActive()) {
-            launcher.updateTurretFromAprilTag();
+            //launcher.updateTurretFromAprilTag();
             launcher.updateFlywheelFromAprilTag();
             launcher.updateFlywheel();
 

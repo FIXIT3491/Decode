@@ -62,7 +62,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         wheel.init(hardwareMap, telemetry);
         launcher.setTrackedTagId(20);
 
-        launcher.updateTurretFromAprilTag();
+        /*launcher.updateTurretFromAprilTag();
 
         //move back and shoot
         drive.resetHeading();
@@ -121,7 +121,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         sleep(10000);
         drive.drive(0,0.5,0);
         sleep(1050);
-        drive.brake();
+        drive.brake();*/
 
     }
 }

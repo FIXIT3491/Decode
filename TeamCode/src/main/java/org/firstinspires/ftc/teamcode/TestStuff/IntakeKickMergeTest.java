@@ -130,7 +130,7 @@ public class IntakeKickMergeTest extends OpMode {
         }
 
         if (launcherAuto) {
-            launcher.updateTurretFromAprilTag();
+            //launcher.updateTurretFromAprilTag();
             launcher.updateFlywheelFromAprilTag();
         }
 

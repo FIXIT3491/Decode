@@ -145,7 +145,7 @@ public class BasicTeleOpRed extends OpMode {
         boolean launcherLB = gamepad2.left_bumper;
 
         /* ===================== LAUNCHER CONTROL ===================== */
-        launcher.updateTurretFromAprilTag();
+       // launcher.updateTurretFromAprilTag();
 
         if (gamepad2.x) {
             launcher.setFlywheelRPM(3200);
