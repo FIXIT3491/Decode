@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 import static android.os.SystemClock.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -57,10 +58,10 @@ public class Launcher {
     private static final double BEARING_ALPHA = 0.2; // smoothing factor -> 0.1 is smoothest, 0.3 is the min
 
     // Flywheel PIDF
-    private final double kF = 0.0002;//0.0002
-    private final double kP = 0.001;//0.0006
-    private final double kI = 0.0;//0.0
-    private final double kD = 0.000;//0.0001
+    private final double kP = 1.4;
+    private final double kI = 0.0;
+    private final double kD = 0;
+    private final double kF = 14.2;
 
     // Turret
     private double filteredBearing = 0;
@@ -99,17 +100,13 @@ public class Launcher {
     public void init(HardwareMap hardwareMap) {
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-        PIDFCoefficients pidfOrig = flywheel.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         // Change coefficients using methods included with DcMotorEx class.
         PIDFCoefficients pidfNew = new PIDFCoefficients(kP, kI, kD, kF);
         flywheel.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
-
-        // Re-read coefficients and verify change.
-        PIDFCoefficients pidfModified = flywheel.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         turret = hardwareMap.get(CRServo.class, "turret");
         turret.setDirection(CRServo.Direction.REVERSE);
@@ -259,6 +256,10 @@ public class Launcher {
     private void applyTurretPower(double power) {
         lastTurretPower = power;
         turret.setPower(power);
+    }
+
+    public void power (double p) {
+        flywheel.setPower(p);
     }
 
     /*private double getTurretAngleDeg() {

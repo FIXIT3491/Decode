@@ -60,7 +60,8 @@ public class TeleOpTest extends OpMode {
         launcher.setTrackedTagId(24);
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        intake = hardwareMap.get(DcMotor.class, "intake2");
+        intake2 = hardwareMap.get(DcMotor.class, "intake2");
+        intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         park1 = hardwareMap.get(Servo.class, "blFoot");
         park2 = hardwareMap.get(Servo.class, "frFoot");
@@ -107,11 +108,10 @@ public class TeleOpTest extends OpMode {
         launcher.updateFlywheel();
 
         if (rt) {
-            intake.setPower(1);
-            intake2.setPower(1);
+            intake.setPower(-1);
         } else if (lt) {
             intake.setPower(-1);
-            intake2.setPower(1);
+            intake2.setPower(-1);
         } else {
             intake.setPower(0);
             intake2.setPower(0);
