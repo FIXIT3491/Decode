@@ -70,9 +70,9 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 2950; // <4 ft
-    private static final double MID_RPM   = 3900; // 4–7 ft
-    private static final double FAR_RPM   = 4000; // >7 ft
+    private static final double CLOSE_RPM = 4000; // <4 ft
+    private static final double MID_RPM   = 4500; // 4–7 ft
+    private static final double FAR_RPM   = 5200; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
@@ -284,7 +284,7 @@ public class Launcher {
         return true;
     }
 
-    private double selectRPM(double distanceFeet) {
+    public double selectRPM(double distanceFeet) {
 
         if (distanceFeet < 4.0) {
             return CLOSE_RPM;

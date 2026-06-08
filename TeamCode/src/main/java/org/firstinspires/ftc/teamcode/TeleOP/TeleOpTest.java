@@ -1,32 +1,13 @@
 package org.firstinspires.ftc.teamcode.TeleOP;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 //import org.firstinspires.ftc.teamcode.Commands.AprilTagDriveSubsystem;
-import org.firstinspires.ftc.teamcode.Commands.Launcher;
-import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
-import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
 @TeleOp(name = "TeleOpTest", group = "Main TeleOp")
@@ -43,11 +24,9 @@ public class TeleOpTest extends OpMode {
     private Servo park1;
     private Servo park2;
 
-    /* ---------------- Kick State Machine ---------------- */
-    private ElapsedTime parkTimer = new ElapsedTime();
-
     /* ---------------- Launcher ---------------- */
-    private boolean launcherManual = false;
+    private boolean isLauncherManual = false;
+    private boolean lastRightBumper = false;
 
     /* ---------------- Init ---------------- */
 
@@ -87,29 +66,50 @@ public class TeleOpTest extends OpMode {
         /* -------- Inputs -------- */
         boolean rt = gamepad1.right_trigger > 0.1;
         boolean lt = gamepad1.left_trigger > 0.1;
+        boolean rt2 = gamepad2.right_trigger > 0.1;
 
         /* ===================== LAUNCHER CONTROL ===================== */
         launcher.turretBasicTest();
 
-        if (gamepad2.x) {
-            launcher.setFlywheelRPM(3200);
-            hood.setPosition(0.0);}
-        else if (gamepad2.y) {
-            launcher.setFlywheelRPM(3450);
-            hood.setPosition(0.17);}
-        else if (gamepad2.b) {
-            launcher.setFlywheelRPM(4250);
-            hood.setPosition(0.25);}
-        else {
-            launcher.setFlywheelRPM(0);
-            hood.setPosition(0.1);
+        if (isLauncherManual) {
+            if (gamepad2.x) {
+                launcher.setFlywheelRPM(4000);
+                hood.setPosition(0.0);
+            } else if (gamepad2.y) {
+                launcher.setFlywheelRPM(4500);
+                hood.setPosition(0.17);
+            } else if (gamepad2.b) {
+                launcher.setFlywheelRPM(5250);
+                hood.setPosition(0.25);
+            } else {
+                launcher.setFlywheelRPM(0);
+                hood.setPosition(0.1);
+            }
+        } else {
+            if (gamepad2.x) {
+                launcher.updateFlywheelFromAprilTag();
+            } else {
+                launcher.stopFlywheel();
+            }
         }
 
         launcher.updateFlywheel();
 
+        //driver 1
         if (rt) {
             intake.setPower(-1);
-        } else if (lt) {
+        } else {
+            intake.setPower(0);
+        }
+
+        if (lt) {
+            intake.setPower(1);
+        } else {
+            intake.setPower(0);
+        }
+
+        //driver 2
+        if (rt2) {
             intake.setPower(-1);
             intake2.setPower(-1);
         } else {
@@ -121,10 +121,15 @@ public class TeleOpTest extends OpMode {
         if (gamepad1.dpad_down) {
             park1.setPosition(0.61);// bl
             park2.setPosition(0.19);// fr
-            parkTimer.reset();
         } else if (gamepad1.dpad_up) {
             park1.setPosition(0.81); //bl
             park2.setPosition(0.30); //fr
+        }
+
+        boolean rightBumper = gamepad2.right_bumper;
+
+        if (rightBumper && !lastRightBumper) {
+            isLauncherManual = !isLauncherManual;
         }
 
     }

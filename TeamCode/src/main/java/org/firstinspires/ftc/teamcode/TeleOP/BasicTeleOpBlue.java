@@ -158,7 +158,7 @@ public class BasicTeleOpBlue extends OpMode {
             launcher.setFlywheelRPM(4250);
             hood.setPosition(0.25);}
         else {
-            launcher.setFlywheelRPM(0);
+            launcher.setFlywheelRPM(100);
             hood.setPosition(0.1);
         }
 

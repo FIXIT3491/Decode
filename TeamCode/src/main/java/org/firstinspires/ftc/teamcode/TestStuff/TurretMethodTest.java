@@ -25,7 +25,7 @@ public class TurretMethodTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            //launcher.setTargetForTurret();
+            launcher.turretBasicTest();
 
         }
         launcher.closeVision();
