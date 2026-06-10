@@ -109,7 +109,7 @@ public class Launcher {
         flywheel.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
 
         turret = hardwareMap.get(CRServo.class, "turret");
-        turret.setDirection(CRServo.Direction.REVERSE);
+        turret.setDirection(CRServo.Direction.FORWARD);
 
         /*
         turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
@@ -267,7 +267,6 @@ public class Launcher {
     }*/
 
     /* ===================== FLYWHEEL CONTROL ===================== */
-
     public boolean updateFlywheelFromAprilTag() {
 
         AprilTagDetection tag = getTrackedTag();

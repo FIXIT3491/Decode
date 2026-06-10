@@ -58,10 +58,10 @@ public class TeleOpTest extends OpMode {
 
         /* -------- Drive -------- */
         if (gamepad1.back) {drive.resetHeading();}
-        double y = -gamepad1.left_stick_y;
+        /*double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
-        drive.drive(y, x, rx);
+        drive.drive(y, x, rx);*/
 
         /* -------- Inputs -------- */
         boolean rt = gamepad1.right_trigger > 0.1;
@@ -96,17 +96,15 @@ public class TeleOpTest extends OpMode {
         launcher.updateFlywheel();
 
         //driver 1
+        double intakePower = 0;
+
         if (rt) {
-            intake.setPower(-1);
-        } else {
-            intake.setPower(0);
+            intakePower = -1;
+        } else if (lt) {
+            intakePower = 1;
         }
 
-        if (lt) {
-            intake.setPower(1);
-        } else {
-            intake.setPower(0);
-        }
+        intake.setPower(intakePower);
 
         //driver 2
         if (rt2) {
@@ -131,6 +129,8 @@ public class TeleOpTest extends OpMode {
         if (rightBumper && !lastRightBumper) {
             isLauncherManual = !isLauncherManual;
         }
+
+        lastRightBumper = rightBumper;
 
     }
 

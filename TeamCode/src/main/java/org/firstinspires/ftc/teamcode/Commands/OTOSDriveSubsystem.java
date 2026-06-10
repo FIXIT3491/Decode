@@ -375,7 +375,7 @@ public class OTOSDriveSubsystem {
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.71875, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.8125, 0);
         otos.setOffset(offset);
 
         otos.setLinearScalar(0.993095997);//0.993095997
