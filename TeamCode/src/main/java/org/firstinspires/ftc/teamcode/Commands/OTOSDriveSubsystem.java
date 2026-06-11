@@ -38,7 +38,7 @@ public class OTOSDriveSubsystem {
     private static final double MAX_ROTATION_POWER = 0.5;
 
     private static final double POSITION_TOLERANCE = 0.25; // inches
-    private static final double HEADING_TOLERANCE = Math.toRadians(2);
+    private static final double HEADING_TOLERANCE = Math.toRadians(0.08726646);
 
     private boolean forwardActive = false;
     private double forwardTargetX;
