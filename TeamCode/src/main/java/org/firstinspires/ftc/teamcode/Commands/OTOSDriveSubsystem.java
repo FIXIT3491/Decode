@@ -348,7 +348,7 @@ public class OTOSDriveSubsystem {
     }
 
     public double getHeading() { return getPose().h; }
-    public double getX() { return -getPose().x; }
+    public double getX() { return getPose().x; }
     public double getY() { return getPose().y; }
 
     public void stop() {
@@ -375,7 +375,7 @@ public class OTOSDriveSubsystem {
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.8125, 0);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.8125, 90);
         otos.setOffset(offset);
 
         otos.setLinearScalar(0.993095997);//0.993095997
@@ -383,7 +383,7 @@ public class OTOSDriveSubsystem {
 
         otos.calibrateImu();
 
-        otos.resetTracking();
+        otos.resetTracking(); 
 
         SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
         otos.setPosition(currentPosition);
