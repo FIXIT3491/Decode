@@ -37,8 +37,8 @@ public class OTOSDriveSubsystem {
     private static final double MAX_TRANSLATION_POWER = 0.6;
     private static final double MAX_ROTATION_POWER = 0.5;
 
-    private static final double POSITION_TOLERANCE = 1.5; // inches
-    private static final double HEADING_TOLERANCE = 2.5;
+    private static final double POSITION_TOLERANCE = 1.75; // inches
+    private static final double HEADING_TOLERANCE = 3;
 
     private boolean forwardActive = false;
     private double forwardTargetX;
@@ -174,7 +174,7 @@ public class OTOSDriveSubsystem {
         yawError = targetHeading - currentPos.h;*/
         xError = targetX - getX();
         yError = targetY - getY();
-        yawError = angleWrapD(targetHeading - getHeading());
+        yawError = targetHeading - getHeading();
 
         while(opMode_ref.opModeIsActive() && !isDone) {
             // Use the speed and turn "gains" to calculate how we want the robot to move.
@@ -206,7 +206,7 @@ public class OTOSDriveSubsystem {
             yError = targetY - getY();
             yawError = targetHeading- getHeading();
 
-            if ((Math.abs(xError) < 0.87) && (Math.abs(yError) < 0.75) && (Math.abs(yawError) < 4)) {
+            if ((Math.abs(xError) < POSITION_TOLERANCE) && (Math.abs(yError) < POSITION_TOLERANCE) && (Math.abs(yawError) < HEADING_TOLERANCE)) {
                 isDone = true;
             }
         }
@@ -348,7 +348,7 @@ public class OTOSDriveSubsystem {
         }
     }
 
-    public double getHeading() { return getPose().h;}
+    public double getHeading() { return -getPose().h;}
     public double getX() { return -getPose().x;}
     public double getY() { return getPose().y;}
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOP;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -38,8 +39,8 @@ public class TeleOpTest extends OpMode {
         launcher.init(hardwareMap);
         launcher.setTrackedTagId(24);
 
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        intake2 = hardwareMap.get(DcMotor.class, "intake2");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake2 = hardwareMap.get(DcMotorEx.class, "intake2");
         intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         park1 = hardwareMap.get(Servo.class, "blFoot");
@@ -58,8 +59,8 @@ public class TeleOpTest extends OpMode {
 
         /* -------- Drive -------- */
         if (gamepad1.back) {drive.resetHeading();}
-        double y = -gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y * 0.8;
+        double x = gamepad1.left_stick_x * 0.7;
         double rx = gamepad1.right_stick_x;
         drive.drive(y, x, rx);
 
@@ -73,14 +74,14 @@ public class TeleOpTest extends OpMode {
 
         if (isLauncherManual) {
             if (gamepad2.x) {
-                launcher.setFlywheelRPM(4000);
+                launcher.setFlywheelRPM(4200);
                 hood.setPosition(0.0);
             } else if (gamepad2.y) {
-                launcher.setFlywheelRPM(4500);
-                hood.setPosition(0.17);
+                launcher.setFlywheelRPM(5000);
+                hood.setPosition(0.1);
             } else if (gamepad2.b) {
-                launcher.setFlywheelRPM(5250);
-                hood.setPosition(0.25);
+                launcher.setFlywheelRPM(6000);
+                hood.setPosition(0.2);
             } else {
                 launcher.setFlywheelRPM(0);
                 hood.setPosition(0.1);
@@ -108,8 +109,8 @@ public class TeleOpTest extends OpMode {
 
         //driver 2
         if (rt2) {
-            intake.setPower(-1);
-            intake2.setPower(-1);
+            intake.setPower(-0.8);
+            intake2.setPower(-0.8);
         } else {
             intake.setPower(0);
             intake2.setPower(0);
