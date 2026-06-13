@@ -78,10 +78,10 @@ public class TeleOpTest extends OpMode {
                 hood.setPosition(0.0);
             } else if (gamepad2.y) {
                 launcher.setFlywheelRPM(5000);
-                hood.setPosition(0.1);
+                hood.setPosition(0.12);
             } else if (gamepad2.b) {
                 launcher.setFlywheelRPM(6000);
-                hood.setPosition(0.2);
+                hood.setPosition(0.25);
             } else {
                 launcher.setFlywheelRPM(0);
                 hood.setPosition(0.1);

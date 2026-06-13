@@ -57,9 +57,9 @@ public class OTOS_Test extends LinearOpMode {
             telemetry.addLine("Press Y to reset tracking");
             telemetry.addLine();
 
-            telemetry.addData("X (in)", "%.2f", -pos.y);
-            telemetry.addData("Y (in)", "%.2f", -pos.x);
-            telemetry.addData("Heading (deg)", "%.1f", -pos.h);
+            telemetry.addData("X (in)", "%.2f", pos.y);
+            telemetry.addData("Y (in)", "%.2f", pos.x);
+            telemetry.addData("Heading (deg)", "%.1f", pos.h);
             telemetry.addData("Total Distance (in)", "%.2f", totalDistance);
 
             telemetry.update();
@@ -73,7 +73,7 @@ public class OTOS_Test extends LinearOpMode {
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.8125, 0, 180);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.8125, 0, 0);
         otos.setOffset(offset);
 
         otos.setLinearScalar(0.993095997);//0.993095997

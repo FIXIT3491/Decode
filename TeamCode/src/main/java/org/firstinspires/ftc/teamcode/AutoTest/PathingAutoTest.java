@@ -27,10 +27,10 @@ public class PathingAutoTest extends LinearOpMode {
         // Reset pose to 0,0,0
         drive.resetPose(0, 0, 0);
 
-        drive.otosDrive(0,0,90);
-        sleep(10000);
-        /*drive.otosDrive(0,24,0);
+        /*drive.otosDrive(0,0,90);
         sleep(10000);*/
+        drive.otosDrive(0,24,0);
+        sleep(10000);
 
         RobotLog.i("MyFTCTag", "OpMode stopped.");
 

@@ -45,11 +45,11 @@ public class RedBasicAuto2 extends LinearOpMode {
 
         //drive forward
         intake.setPower(-0.8);
-        drive.otosDrive(0,48,0);
+        drive.otosDrive(0,50,0);
         sleep(3000);
 
         //return to shooting location
-        drive.otosDrive(0,0,0);
+        drive.otosDrive(0,1,0);
         sleep(100);
 
         //shoot
