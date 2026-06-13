@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
+import org.firstinspires.ftc.teamcode.Commands.OTOSDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,115 +14,58 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 @Autonomous(group = "Back", name="BackRedAuto")
 public class RedBasicAuto2 extends LinearOpMode {
 
-    private BasicMecanumDrive drive;
     private Launcher launcher;
-
+    private OTOSDriveSubsystem drive;
     private DcMotor intake;
-    private Servo kick;
-    private Servo kick2;
+    private DcMotor intake2;
     private Servo hood;
-
-    private ColorSensor intakeColor;
-    private ColorSensor outtakeColor;
-
-    private int kickState = 0;
-    private int kickWheelCounter = 0;
-
-    private final double KICK_UP = 0.6;
-    private final double KICK_DOWN = 0.2;
-    private final double KICK2_UP = 1.0;
-    private final double KICK2_DOWN = 0.5;
-    private int intakeCounter = 0;
-    private int outtakeCounter = 0;
-    private int kickRun = 0;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
-        BasicMecanumDrive drive = new BasicMecanumDrive(hardwareMap);
         Launcher launcher = new Launcher();
-        WheelRotation wheel = new WheelRotation();
+        launcher.init(hardwareMap);
         intake = hardwareMap.get(DcMotor.class, "intake");
-
-        kick = hardwareMap.get(Servo.class, "kick");
-        kick2 = hardwareMap.get(Servo.class, "kick2");
-
-        intakeColor = hardwareMap.get(ColorSensor.class, "color2");
-        outtakeColor = hardwareMap.get(ColorSensor.class, "color1");
-
-        kick2.setDirection(Servo.Direction.REVERSE);
-
-        kick.setPosition(KICK_DOWN);
-        kick2.setPosition(KICK2_DOWN);
-
+        intake2 = hardwareMap.get(DcMotor.class, "intake2");
+        intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        drive = new OTOSDriveSubsystem(hardwareMap, this);
+        drive.configureOtos();
         hood = hardwareMap.get(Servo.class, "hood");
 
         waitForStart();
+        drive.resetPose(0, 0, 0);
 
-        launcher.init(hardwareMap);
-        wheel.init(hardwareMap, telemetry);
-        launcher.setTrackedTagId(20);
+        //preloads
+        launcher.flywheelRPM(6000);
+        hood.setPosition(0.1);
+        sleep(2000);
+        spin(-0.9);
+        sleep(1000);
+        spin(0);
+        sleep(1000);
 
-        /*launcher.updateTurretFromAprilTag();
+        //drive forward
+        intake.setPower(-0.8);
+        drive.otosDrive(0,48,0);
+        sleep(3000);
 
-        //move back and shoot
-        drive.resetHeading();
+        //return to shooting location
+        drive.otosDrive(0,0,0);
         sleep(100);
-        launcher.setFlywheelRPM(4250);
-        launcher.updateFlywheel();
-        launcher.updateTurretFromAprilTag();
-        hood.setPosition(0.25);
-        sleep(200);
-        launcher.updateFlywheel();
-        launcher.updateTurretFromAprilTag();
-        sleep(5000);
 
-        while (opModeIsActive() && kickRun <= 6){
-            if (kickState == 0) {
-                launcher.updateFlywheel();
-                launcher.updateTurretFromAprilTag();
-                kick.setPosition(KICK_UP);
-                sleep(100);
-                kickState = 1;
-            }
+        //shoot
+        launcher.flywheelRPM(6000);
+        sleep(1000);
+        intake2.setPower(-0.8);
+        sleep(1000);
 
-            if (kickState == 1) {
-                launcher.updateFlywheel();
-                launcher.updateTurretFromAprilTag();
-                kick2.setPosition(KICK2_UP);
-                sleep(200);
-                kickState = 2;
-            }
-
-            if (kickState == 2) {
-                launcher.updateFlywheel();
-                launcher.updateTurretFromAprilTag();
-                kick.setPosition(KICK_DOWN);
-                kick2.setPosition(KICK2_DOWN);
-                sleep(400);
-                kickState = 3;
-            }
-
-            if (kickState == 3) {
-                launcher.updateFlywheel();
-                launcher.updateTurretFromAprilTag();
-                switch (kickWheelCounter) {
-                    case 0: wheel.rotateToAngle((120), 0.3); break;
-                    case 1: wheel.rotateToAngle((240), 0.3); break;
-                    case 2: wheel.rotateToAngle((4), 0.3); break;
-                }
-
-                kickWheelCounter = (kickWheelCounter + 1) % 3;
-                kickState = 0;
-                kickRun++;
-            }
-        }
-
+        //reset
+        spin(0);
         launcher.stopFlywheel();
-        sleep(10000);
-        drive.drive(0,0.5,0);
-        sleep(1050);
-        drive.brake();*/
+        drive.resetPose(0,0,0);
+    }
 
+    private void spin (double pwr) {
+        intake.setPower(pwr);
+        intake2.setPower(pwr);
     }
 }

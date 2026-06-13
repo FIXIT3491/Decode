@@ -348,7 +348,7 @@ public class OTOSDriveSubsystem {
         }
     }
 
-    public double getHeading() { return -getPose().h;}
+    public double getHeading() { return getPose().h;}
     public double getX() { return -getPose().x;}
     public double getY() { return getPose().y;}
 

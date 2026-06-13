@@ -39,8 +39,8 @@ public class TeleOpTest extends OpMode {
         launcher.init(hardwareMap);
         launcher.setTrackedTagId(24);
 
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        intake2 = hardwareMap.get(DcMotorEx.class, "intake2");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake2 = hardwareMap.get(DcMotor.class, "intake2");
         intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         park1 = hardwareMap.get(Servo.class, "blFoot");
@@ -59,8 +59,8 @@ public class TeleOpTest extends OpMode {
 
         /* -------- Drive -------- */
         if (gamepad1.back) {drive.resetHeading();}
-        double y = -gamepad1.left_stick_y * 0.8;
-        double x = gamepad1.left_stick_x * 0.7;
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
         drive.drive(y, x, rx);
 
@@ -100,9 +100,9 @@ public class TeleOpTest extends OpMode {
         double intakePower = 0;
 
         if (rt) {
-            intakePower = -1;
+            intakePower = -0.9;
         } else if (lt) {
-            intakePower = 1;
+            intakePower = 0.9;
         }
 
         intake.setPower(intakePower);
