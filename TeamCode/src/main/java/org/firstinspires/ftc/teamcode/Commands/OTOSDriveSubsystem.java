@@ -37,8 +37,8 @@ public class OTOSDriveSubsystem {
     private static final double MAX_TRANSLATION_POWER = 0.6;
     private static final double MAX_ROTATION_POWER = 0.5;
 
-    private static final double POSITION_TOLERANCE = 0.25; // inches
-    private static final double HEADING_TOLERANCE = Math.toRadians(0.08726646);
+    private static final double POSITION_TOLERANCE = 1.5; // inches
+    private static final double HEADING_TOLERANCE = 2.5;
 
     private boolean forwardActive = false;
     private double forwardTargetX;
@@ -138,7 +138,7 @@ public class OTOSDriveSubsystem {
 
 
             forwardTargetX = pose.x;
-            forwardTargetY = pose.y + inches * Math.cos(pose.h);
+            forwardTargetY = pose.y + inches * Math.cos(Math.toRadians(pose.h));
             forwardTargetHeading = pose.h;
 
 
@@ -161,6 +161,7 @@ public class OTOSDriveSubsystem {
         return done;
     }
 
+    // in the future think about power levels for strafing (should be higher) and general movement
     public void otosDrive(double targetX, double targetY, double targetHeading) {
         double drive, strafe, turn;
         double currentRange, targetRange, initialBearing, targetBearing, xError, yError, yawError;
@@ -173,7 +174,7 @@ public class OTOSDriveSubsystem {
         yawError = targetHeading - currentPos.h;*/
         xError = targetX - getX();
         yError = targetY - getY();
-        yawError = targetHeading - getHeading();
+        yawError = angleWrapD(targetHeading - getHeading());
 
         while(opMode_ref.opModeIsActive() && !isDone) {
             // Use the speed and turn "gains" to calculate how we want the robot to move.
@@ -186,7 +187,7 @@ public class OTOSDriveSubsystem {
             opMode_ref.telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             // current x,y swapped due to 90 degree rotation
             opMode_ref.telemetry.addData("current X coordinate", getX());
-            opMode_ref.telemetry.addData("current Y coordinate", getX());
+            opMode_ref.telemetry.addData("current Y coordinate", getY());
             opMode_ref.telemetry.addData("current Heading angle", getHeading());
             opMode_ref.telemetry.addData("target X coordinate", targetX);
             opMode_ref.telemetry.addData("target Y coordinate", targetY);
@@ -218,7 +219,7 @@ public class OTOSDriveSubsystem {
     }
     Pose2D myPosition() {
         SparkFunOTOS.Pose2D pos = otos.getPosition();
-        Pose2D myPos = new Pose2D(pos.y, pos.x, -pos.h);
+        Pose2D myPos = new Pose2D(pos.y, -pos.x, pos.h);
         return(myPos);
     }
 
@@ -347,9 +348,9 @@ public class OTOSDriveSubsystem {
         }
     }
 
-    public double getHeading() { return getPose().h; }
-    public double getX() { return getPose().x; }
-    public double getY() { return getPose().y; }
+    public double getHeading() { return getPose().h;}
+    public double getX() { return -getPose().x;}
+    public double getY() { return getPose().y;}
 
     public void stop() {
         frontLeft.setPower(0);
@@ -365,17 +366,29 @@ public class OTOSDriveSubsystem {
         return radians;
     }
 
+    private double angleWrapD(double degrees) {
+        degrees %= 360;
+
+        if (degrees > 180) {
+            degrees -= 360;
+        }
+        if (degrees < -180) {
+            degrees += 360;
+        }
+
+        return degrees;
+    }
+
 
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
 
-    private void configureOtos() {
-
+    public void configureOtos() {
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.8125, 90);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.8125, 0, 0);
         otos.setOffset(offset);
 
         otos.setLinearScalar(0.993095997);//0.993095997
@@ -383,7 +396,7 @@ public class OTOSDriveSubsystem {
 
         otos.calibrateImu();
 
-        otos.resetTracking(); 
+        otos.resetTracking();
 
         SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
         otos.setPosition(currentPosition);

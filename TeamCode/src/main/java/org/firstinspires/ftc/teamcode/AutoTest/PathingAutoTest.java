@@ -16,6 +16,7 @@ public class PathingAutoTest extends LinearOpMode {
     public void runOpMode() {
 
         drive = new OTOSDriveSubsystem(hardwareMap, this);
+        drive.configureOtos();
 
         telemetry.addLine("Initialized. Waiting for start...");
         telemetry.update();
@@ -26,9 +27,10 @@ public class PathingAutoTest extends LinearOpMode {
         // Reset pose to 0,0,0
         drive.resetPose(0, 0, 0);
 
-        drive.otosDrive(30,36,0);
-        sleep(1000);
-        drive.otosDrive(30,36, 90);
+        drive.otosDrive(0,0,90);
+        sleep(10000);
+        /*drive.otosDrive(0,24,0);
+        sleep(10000);*/
 
         RobotLog.i("MyFTCTag", "OpMode stopped.");
 

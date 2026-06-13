@@ -73,7 +73,7 @@ public class OTOS_Test extends LinearOpMode {
         otos.setLinearUnit(DistanceUnit.INCH);
         otos.setAngularUnit(AngleUnit.DEGREES);
 
-        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 3.8125, 90);
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(-3.8125, 0, 180);
         otos.setOffset(offset);
 
         otos.setLinearScalar(0.993095997);//0.993095997
