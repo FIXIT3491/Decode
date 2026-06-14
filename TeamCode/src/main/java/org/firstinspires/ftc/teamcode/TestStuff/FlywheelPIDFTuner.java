@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tuning;
+package org.firstinspires.ftc.teamcode.TestStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -31,7 +31,7 @@ public class FlywheelPIDFTuner extends LinearOpMode {
 
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
 
-        flywheel.setDirection(DcMotorEx.Direction.REVERSE);
+        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
 
         flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);

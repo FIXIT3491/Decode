@@ -344,6 +344,18 @@ public class Launcher {
         RobotLog.i("RyanTag6 actualRPM=%f targetRPM=%f", getCurrentRPM(), targetRPM);
     }
 
+    public void flywheelRPM (int rpm) {
+        if (rpm == 0) {
+            flywheel.setVelocity(0);
+            return;
+        }
+
+        double ticksPerSecond =
+                (targetRPM * FLYWHEEL_TICKS_PER_REV) / 60.0;
+
+        flywheel.setVelocity(ticksPerSecond);
+    }
+
     /*
     // This includes the external PID which might overlap with the internal REV PID
     // this is also a new updated version
