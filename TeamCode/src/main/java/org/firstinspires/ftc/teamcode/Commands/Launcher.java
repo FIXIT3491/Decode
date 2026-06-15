@@ -70,9 +70,9 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 4000; // <4 ft
-    private static final double MID_RPM   = 4500; // 4–7 ft
-    private static final double FAR_RPM   = 5200; // >7 ft
+    private static final double CLOSE_RPM = 4600; // <4 ft
+    private static final double MID_RPM   = 5250; // 4–7 ft
+    private static final double FAR_RPM   = 7000; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
@@ -354,6 +354,26 @@ public class Launcher {
                 (targetRPM * FLYWHEEL_TICKS_PER_REV) / 60.0;
 
         flywheel.setVelocity(ticksPerSecond);
+    }
+
+    public boolean flywheelRPMAuto(int rpm) {
+
+        // Stop request
+        if (rpm == 0) {
+            flywheel.setVelocity(0);
+            return false;
+        }
+
+        // Convert RPM -> ticks/sec
+        double ticksPerSecond =
+                (rpm * FLYWHEEL_TICKS_PER_REV) / 60.0;
+
+        flywheel.setVelocity(ticksPerSecond);
+
+        // Check if we're at target speed
+        double currentRPM = getCurrentRPM();
+
+        return Math.abs(currentRPM - rpm) > 100; // 100 RPM tolerance
     }
 
     /*

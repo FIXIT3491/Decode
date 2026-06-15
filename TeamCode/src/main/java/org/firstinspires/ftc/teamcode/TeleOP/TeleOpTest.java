@@ -74,16 +74,16 @@ public class TeleOpTest extends OpMode {
 
         if (isLauncherManual) {
             if (gamepad2.x) {
-                launcher.setFlywheelRPM(4200);
+                launcher.setFlywheelRPM(4000);
                 hood.setPosition(0.0);
             } else if (gamepad2.y) {
-                launcher.setFlywheelRPM(5000);
+                launcher.setFlywheelRPM(4250);
                 hood.setPosition(0.12);
             } else if (gamepad2.b) {
-                launcher.setFlywheelRPM(6000);
+                launcher.setFlywheelRPM(4500);
                 hood.setPosition(0.25);
             } else {
-                launcher.setFlywheelRPM(0);
+                launcher.setFlywheelRPM(100);
                 hood.setPosition(0.1);
             }
         } else {
@@ -96,25 +96,28 @@ public class TeleOpTest extends OpMode {
 
         launcher.updateFlywheel();
 
-        //driver 1
+        //driver intakes
         double intakePower = 0;
+        double intakePower2 = 0;
 
         if (rt) {
             intakePower = -0.9;
         } else if (lt) {
             intakePower = 0.9;
+        } else if (rt2) {
+            intakePower = -0.8;
+            intakePower2 = -1;
+        } else {
+            intakePower = 0;
+            intakePower2 = 0;
+        }
+
+        if (gamepad1.a && !rt2) {
+            intakePower2 = -0.25;
         }
 
         intake.setPower(intakePower);
-
-        //driver 2
-        if (rt2) {
-            intake.setPower(-0.8);
-            intake2.setPower(-0.8);
-        } else {
-            intake.setPower(0);
-            intake2.setPower(0);
-        }
+        intake2.setPower(intakePower2);
 
         /* -------- Parking -------- */
         if (gamepad1.dpad_down) {
