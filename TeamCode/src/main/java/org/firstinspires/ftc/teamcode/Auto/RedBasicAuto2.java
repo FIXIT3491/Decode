@@ -37,7 +37,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         //preloads
         launcher.flywheelRPMAuto(4900);
         hood.setPosition(0.18);
-        sleep(4700);
+        sleep(4000);
         spin(-1);
         sleep(2500);
         spin(0);
@@ -49,7 +49,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         sleep(500);
         drive.otosDrive(3,38,0);
         sleep(100);
-        drive.otosDrive(0,46,0);
+        drive.otosDrive(5,46,0);
         launcher.flywheelRPMAuto(5000);
         sleep(550);
 
@@ -72,7 +72,7 @@ public class RedBasicAuto2 extends LinearOpMode {
         sleep(500);
         drive.otosDrive(3,42,0);
         sleep(100);
-        drive.otosDrive(5,51,0);
+        drive.otosDrive(5,50,0);
         launcher.flywheelRPMAuto(5000);
         sleep(550);
 

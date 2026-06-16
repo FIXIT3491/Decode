@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class OTOSDriveSubsystem {
 
@@ -45,6 +46,7 @@ public class OTOSDriveSubsystem {
     private double forwardTargetY;
     private double forwardTargetHeading;
     private LinearOpMode opMode_ref = null;
+    private ElapsedTime runtime = new ElapsedTime();
 
     public OTOSDriveSubsystem(HardwareMap hardwareMap, LinearOpMode op) {
         frontLeft  = hardwareMap.get(DcMotorEx.class, "frontLeft");
@@ -156,6 +158,7 @@ public class OTOSDriveSubsystem {
         double currentRange, targetRange, initialBearing, targetBearing, xError, yError, yawError;
         double opp, adj;
         boolean isDone = false;
+        runtime.reset();
 
         //Pose2D currentPos = myPosition();
         /*xError = targetX - currentPos.x;
@@ -165,7 +168,7 @@ public class OTOSDriveSubsystem {
         yError = targetY - getY();
         yawError = targetHeading - getHeading();
 
-        while(opMode_ref.opModeIsActive() && !isDone) {
+        while(opMode_ref.opModeIsActive() && !isDone && runtime.milliseconds() < 5000) {
             // Use the speed and turn "gains" to calculate how we want the robot to move.
             drive  = Range.clip(yError * SPARKFUN_SPEED_GAIN, -SPARKFUN_MAX_AUTO_SPEED, SPARKFUN_MAX_AUTO_SPEED);
             strafe = Range.clip(xError * SPARKFUN_STRAFE_GAIN, -SPARKFUN_MAX_AUTO_STRAFE, SPARKFUN_MAX_AUTO_STRAFE);

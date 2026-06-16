@@ -83,14 +83,14 @@ public class TeleOpTest extends OpMode {
                 launcher.setFlywheelRPM(4500);
                 hood.setPosition(0.25);
             } else {
-                launcher.setFlywheelRPM(100);
+                launcher.setFlywheelRPM(1000);
                 hood.setPosition(0.1);
             }
         } else {
             if (gamepad2.x) {
                 launcher.updateFlywheelFromAprilTag();
             } else {
-                launcher.stopFlywheel();
+                launcher.setFlywheelRPM(1000);
             }
         }
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutoTest;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -17,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "OTOS Drive Test Auto", group = "Test")
 public class PathingAutoTest extends LinearOpMode {
 
-    final double TURN_GAIN   =  0.05  ;   // 0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double TURN_GAIN   =  0.05;   // 0.01 Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
@@ -47,6 +49,11 @@ public class PathingAutoTest extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         drive = new OTOSDriveSubsystem(hardwareMap, this);
+        //YOU NEED THIS
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
         drive.configureOtos();
 
         telemetry.addLine("Initialized. Waiting for start...");
@@ -58,9 +65,13 @@ public class PathingAutoTest extends LinearOpMode {
         // Reset pose to 0,0,0
         drive.resetPose(0, 0, 0);
 
-        drive.otosDrive(0,24,0);
-        sleep(10000);
+        drive.otosDrive(0,36,0);
+        sleep(5000);
         imuTurn(90);
+        sleep(1000);
+        drive.resetPose(0,36,0);
+        sleep(1000);
+        drive.otosDrive(36,36, drive.getHeading());
 
 
         RobotLog.i("MyFTCTag", "OpMode stopped.");
@@ -75,12 +86,16 @@ public class PathingAutoTest extends LinearOpMode {
         while (opModeIsActive() && !done && runtime.milliseconds() < 2000) {
             orientation = imu.getRobotYawPitchRollAngles();
             headingError    = heading - orientation.getYaw(AngleUnit.DEGREES);
-            if (Math.abs(headingError) > 5) {
+            if (Math.abs(headingError) > 3) {
                 turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
                 moveRobot(0, 0, turn);}
             else done = true;
+            if (runtime.milliseconds() < 2000){
+                telemetry.addData("Done: ", "run out");
             }
-        moveRobot(0, 0, 0);}
+            }
+        moveRobot(0, 0, 0);
+    }
 
     public void moveRobot(double x, double y, double yaw) {
         /* positive values of x move forward
