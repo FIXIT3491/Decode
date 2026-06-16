@@ -95,29 +95,23 @@ public class OTOSDriveSubsystem {
             return true;
         }
 
-
         double cos = Math.cos(pose.h);
         double sin = Math.sin(pose.h);
 
-
         double robotX = -errorX * cos + errorY * sin;
         double robotY = -errorX * sin + errorY * cos;
-
 
         // === Proportional control ===
         double driveX = robotX * kP_TRANSLATION;
         double driveY = robotY * kP_TRANSLATION;
         double turn   = headingError * kP_ROTATION;
 
-
         // Clamp
         driveX = clamp(driveX, -MAX_TRANSLATION_POWER, MAX_TRANSLATION_POWER);
         driveY = clamp(driveY, -MAX_TRANSLATION_POWER, MAX_TRANSLATION_POWER);
         turn   = clamp(turn,   -MAX_ROTATION_POWER,   MAX_ROTATION_POWER);
-
 ;
         driveRobotCentric(driveY, driveX, turn);
-
 
         return false;
     }
@@ -129,22 +123,17 @@ public class OTOSDriveSubsystem {
      */
     public boolean moveForward(double inches) {
 
-
         // Initialize target ONCE
         if (!forwardActive) {
 
-
             SparkFunOTOS.Pose2D pose = getPose();
-
 
             forwardTargetX = pose.x;
             forwardTargetY = pose.y + inches * Math.cos(Math.toRadians(pose.h));
             forwardTargetHeading = pose.h;
 
-
             forwardActive = true;
         }
-
 
         boolean done = goToPoint(
                 forwardTargetX,
@@ -222,7 +211,6 @@ public class OTOSDriveSubsystem {
         Pose2D myPos = new Pose2D(pos.y, -pos.x, pos.h);
         return(myPos);
     }
-
 
     // ================== DRIVE METHODS ========================
     public void driveRobotCentric(double y, double x, double rx) {
@@ -315,7 +303,6 @@ public class OTOSDriveSubsystem {
 
     private SparkFunOTOS.Pose2D getPose() {
         SparkFunOTOS.Pose2D raw = otos.getPosition();
-
 
         return new SparkFunOTOS.Pose2D(
                 raw.y,     // swap

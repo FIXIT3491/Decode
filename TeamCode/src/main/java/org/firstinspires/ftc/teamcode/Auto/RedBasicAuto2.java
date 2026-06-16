@@ -38,18 +38,19 @@ public class RedBasicAuto2 extends LinearOpMode {
         launcher.flywheelRPMAuto(4900);
         hood.setPosition(0.18);
         sleep(4700);
-        spin(-0.9);
-        sleep(2200);
+        spin(-1);
+        sleep(2500);
         spin(0);
-        launcher.flywheelRPMAuto(100);
+        launcher.flywheelRPMAuto(1000);
 
-        //drive forward and pick up balls
+        //drive forward and pick up balls at back
         intake.setPower(-0.8);
-        drive.otosDrive(3,48,0);
+        drive.otosDrive(3,45,0);
         sleep(500);
-        drive.otosDrive(3,42,0);
+        drive.otosDrive(3,38,0);
         sleep(100);
-        drive.otosDrive(5,51,0);
+        drive.otosDrive(0,46,0);
+        launcher.flywheelRPMAuto(5000);
         sleep(550);
 
         //return to shooting location
@@ -57,10 +58,32 @@ public class RedBasicAuto2 extends LinearOpMode {
         sleep(100);
 
         //shoot
-        launcher.flywheelRPMAuto(5500);
-        sleep(4750);
         intake2.setPower(-0.8);
-        sleep(3000);
+        sleep(2500);
+
+        //reset
+        spin(0);
+        launcher.flywheelRPMAuto(1000);
+        drive.resetPose(0,0,0);
+
+        //drive forward and pick up balls at back
+        intake.setPower(-0.8);
+        drive.otosDrive(3,48,0);
+        sleep(500);
+        drive.otosDrive(3,42,0);
+        sleep(100);
+        drive.otosDrive(5,51,0);
+        launcher.flywheelRPMAuto(5000);
+        sleep(550);
+
+        //return to shooting location
+        drive.otosDrive(0,3,0);
+        sleep(100);
+
+        //shoot
+        sleep(1000);
+        intake2.setPower(-0.8);
+        sleep(2500);
 
         //reset
         spin(0);
