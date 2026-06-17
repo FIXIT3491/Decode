@@ -71,8 +71,8 @@ public class Launcher {
     /* ===================== RPM PRESETS ===================== */
 
     private static final double CLOSE_RPM = 4600; // <4 ft
-    private static final double MID_RPM   = 5250; // 4–7 ft
-    private static final double FAR_RPM   = 7000; // >7 ft
+    private static final double MID_RPM   = 5000; // 4–7 ft
+    private static final double FAR_RPM   = 5400; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
@@ -251,6 +251,31 @@ public class Launcher {
         } else {
             turret.setPower(0);
         }
+    }
+
+    public void turretAuto() {
+
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        while (timer.milliseconds() < 1000) {
+
+            AprilTagDetection tag = getTrackedTag();
+
+            if (tag == null) {
+                turret.setPower(0);
+                break;
+            }
+
+            turretBasicTest();
+
+            if (Math.abs(tag.ftcPose.bearing) < 1.5) {
+                break;
+            }
+
+        }
+
+        turret.setPower(0);
     }
 
     private void applyTurretPower(double power) {

@@ -31,33 +31,35 @@ public class BlueBasicAuto extends LinearOpMode {
         drive.configureOtos();
         hood = hardwareMap.get(Servo.class, "hood");
 
+        launcher.setTrackedTagId(20);
+
         waitForStart();
         drive.resetPose(0, 0, 0);
 
         //back up and shoot preloads
-        launcher.flywheelRPMAuto(3500);
+        launcher.flywheelRPMAuto(4100);
         hood.setPosition(0.1);
         drive.otosDrive(-35,-35,0);
-        sleep(500);
-        spin(1);
+        launcher.turretAuto();
+        sleep(100);
+        spin(-1);
         sleep(2500);
         launcher.flywheelRPMAuto(1000);
         spin(0);
 
         //grab first spike mark
-        intake.setPower(1);
+        intake.setPower(-1);
         drive.otosDrive(-35, -2, 0);
         sleep(100);
 
         //go back and shoot first spike mark
-        launcher.flywheelRPMAuto(3500);
-        drive.otosDrive(-35,-35,0);
+        launcher.flywheelRPMAuto(4100);
+        drive.otosDrive(-35,-33,0);
+        launcher.turretAuto();
         sleep(100);
-        spin(1);
+        spin(-1);
         sleep(2500);
         spin(0);
-
-
 
     }
 
