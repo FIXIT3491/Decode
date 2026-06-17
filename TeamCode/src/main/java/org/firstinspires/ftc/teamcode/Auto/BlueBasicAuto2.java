@@ -45,11 +45,11 @@ public class BlueBasicAuto2 extends LinearOpMode {
 
         //drive forward and pick up balls at back
         intake.setPower(-0.8);
-        drive.otosDrive(-3,45,0);
+        drive.otosDrive(3,45,0);
         sleep(500);
-        drive.otosDrive(-3,38,0);
+        drive.otosDrive(3,38,0);
         sleep(100);
-        drive.otosDrive(-5,46,0);
+        drive.otosDrive(5,46,0);
         launcher.flywheelRPMAuto(5000);
         sleep(550);
 
@@ -68,16 +68,16 @@ public class BlueBasicAuto2 extends LinearOpMode {
 
         //drive forward and pick up balls at back
         intake.setPower(-0.8);
-        drive.otosDrive(-3,48,0);
+        drive.otosDrive(3,48,0);
         sleep(500);
-        drive.otosDrive(-3,42,0);
+        drive.otosDrive(3,42,0);
         sleep(100);
-        drive.otosDrive(-5,49,0);
+        drive.otosDrive(5,50,0);
         launcher.flywheelRPMAuto(5000);
         sleep(550);
 
         //return to shooting location
-        drive.otosDrive(0,24,0);
+        drive.otosDrive(0,3,0);
         sleep(100);
 
         //shoot
