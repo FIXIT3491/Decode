@@ -70,15 +70,15 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 4600; // <4 ft
-    private static final double MID_RPM   = 5000; // 4–7 ft
-    private static final double FAR_RPM   = 5400; // >7 ft
+    private static final double CLOSE_RPM = 3600; // <4 ft
+    private static final double MID_RPM   = 4000; // 4–7 ft
+    private static final double FAR_RPM   = 4600; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
     private static final double CLOSE_HOOD = 0.0;
     private static final double MID_HOOD   = 0.15;
-    private static final double FAR_HOOD   = 0.25;
+    private static final double FAR_HOOD   = 0.21;
 
     /* ===================== STATE ===================== */
 
@@ -251,6 +251,10 @@ public class Launcher {
         } else {
             turret.setPower(0);
         }
+    }
+
+    public void manTurn (double pwr){
+        turret.setPower(pwr);
     }
 
     public void turretAuto() {

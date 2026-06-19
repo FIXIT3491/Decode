@@ -74,14 +74,14 @@ public class TeleOpTest extends OpMode {
 
         if (isLauncherManual) {
             if (gamepad2.x) {
-                launcher.setFlywheelRPM(4000);
-                hood.setPosition(0.0);
+                launcher.setFlywheelRPM(3600);
+                hood.setPosition(0.05);
             } else if (gamepad2.y) {
-                launcher.setFlywheelRPM(4250);
-                hood.setPosition(0.12);
+                launcher.setFlywheelRPM(4000);
+                hood.setPosition(0.13);
             } else if (gamepad2.b) {
-                launcher.setFlywheelRPM(4500);
-                hood.setPosition(0.25);
+                launcher.setFlywheelRPM(4400);
+                hood.setPosition(0.20);
             } else {
                 launcher.setFlywheelRPM(1000);
                 hood.setPosition(0.1);
@@ -89,12 +89,20 @@ public class TeleOpTest extends OpMode {
         } else {
             if (gamepad2.x) {
                 launcher.updateFlywheelFromAprilTag();
+            } else if (gamepad2.a) {
+                launcher.setFlywheelRPM(3000);
             } else {
                 launcher.setFlywheelRPM(1000);
             }
         }
 
         launcher.updateFlywheel();
+
+        if (gamepad2.dpad_left) {
+            launcher.manTurn(1);
+        } else if (gamepad2.dpad_right) {
+            launcher.manTurn(-1);
+        }
 
         //driver intakes
         double intakePower = 0;
