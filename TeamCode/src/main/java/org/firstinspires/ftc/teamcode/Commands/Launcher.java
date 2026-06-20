@@ -39,6 +39,7 @@ public class Launcher {
     // Turret encoder
     private static final double TURRET_TICKS_PER_REV = 537.7;
     private static final double TURRET_GEAR_RATIO = 2.0;
+    private static final double FLYWHEEL_GEAR_RATIO = 1.16666667;
     private static final double DEGREES_PER_TICK =
             360.0 / (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO);
 
@@ -259,12 +260,17 @@ public class Launcher {
 
     public void turretAuto() {
 
+        AprilTagDetection tag = null;
         ElapsedTime timer = new ElapsedTime();
+        ElapsedTime timer2 = new ElapsedTime();
         timer.reset();
+        timer2.reset();
 
         while (timer.milliseconds() < 1000) {
 
-            AprilTagDetection tag = getTrackedTag();
+            while (timer2.milliseconds() < 300) {
+                tag = getTrackedTag();
+            }
 
             if (tag == null) {
                 turret.setPower(0);
