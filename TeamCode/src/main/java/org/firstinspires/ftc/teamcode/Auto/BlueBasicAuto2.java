@@ -35,23 +35,23 @@ public class BlueBasicAuto2 extends LinearOpMode {
         drive.resetPose(0, 0, 0);
 
         //preloads
-        launcher.flywheelRPMAuto(4900);
+        launcher.flywheelRPMAuto(4600);
         hood.setPosition(0.18);
         sleep(4000);
         spin(-1);
-        sleep(2500);
+        sleep(2000);
         spin(0);
-        launcher.flywheelRPMAuto(1000);
+        launcher.flywheelRPMAuto(2250);
 
         //drive forward and pick up balls at back
         intake.setPower(-0.8);
         drive.otosDrive(3,45,0);
-        sleep(500);
+        sleep(100);
         drive.otosDrive(3,38,0);
         sleep(100);
         drive.otosDrive(5,46,0);
-        launcher.flywheelRPMAuto(5000);
-        sleep(550);
+        launcher.flywheelRPMAuto(5500);
+        sleep(100);
 
         //return to shooting location
         drive.otosDrive(0,3,0);
@@ -59,36 +59,47 @@ public class BlueBasicAuto2 extends LinearOpMode {
 
         //shoot
         intake2.setPower(-0.8);
-        sleep(2500);
+        sleep(2000);
 
         //reset
         spin(0);
-        launcher.flywheelRPMAuto(1000);
-        drive.resetPose(0,0,0);
+        launcher.flywheelRPMAuto(2250);
+        //drive.resetPose(0,0,0);
 
-        //drive forward and pick up balls at back
+        // get last spike mark
         intake.setPower(-0.8);
+        drive.otosDrive(26,16,0);
+        sleep(100);
+        drive.otosDrive(26,42,0);
+        sleep(100);
+        launcher.flywheelRPMAuto(5000);
+        sleep(200);
+
+        //drive forward and pick up balls at back (alt if they get last spike mark)
+        /*intake.setPower(-0.8);
         drive.otosDrive(3,48,0);
         sleep(500);
         drive.otosDrive(3,42,0);
         sleep(100);
         drive.otosDrive(5,50,0);
         launcher.flywheelRPMAuto(5000);
-        sleep(550);
+        sleep(550);*/
 
         //return to shooting location
         drive.otosDrive(0,3,0);
         sleep(100);
 
         //shoot
-        sleep(1000);
         intake2.setPower(-0.8);
-        sleep(2500);
+        sleep(2000);
 
         //reset
         spin(0);
         launcher.stopFlywheel();
         drive.resetPose(0,0,0);
+
+        //leave
+        drive.otosDrive(20,20,0);
     }
 
     private void spin (double pwr) {

@@ -48,6 +48,7 @@ public class Flywheel_Incremental_Increase extends OpMode {
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
         intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcher.setTrackedTagId(-1);
 
         telemetry.addLine("Initialized");
         telemetry.update();
@@ -65,6 +66,8 @@ public class Flywheel_Incremental_Increase extends OpMode {
         boolean rt = gamepad1.right_trigger > 0.1;
         boolean lt = gamepad1.left_trigger > 0.1;
         boolean rt2 = gamepad2.right_trigger > 0.1;
+
+        launcher.turretBasicTest();
 
         // FLYWHEEL CONTROLS
 

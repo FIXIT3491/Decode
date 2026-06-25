@@ -7,12 +7,13 @@ import org.firstinspires.ftc.teamcode.Commands.Launcher;
 import org.firstinspires.ftc.teamcode.Commands.OTOSDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
-@Autonomous(group = "Front", name="FrontBlueAuto")
-public class BlueBasicAuto extends LinearOpMode {
+@Autonomous(group = "Test", name="Functions Test")
+public class AutoFunctionsTest extends LinearOpMode {
 
     private Launcher launcher;
     private OTOSDriveSubsystem drive;
@@ -34,55 +35,13 @@ public class BlueBasicAuto extends LinearOpMode {
         launcher.setTrackedTagId(20);
 
         waitForStart();
-        drive.resetPose(0, 0, 0);
 
-        //back up and shoot preloads
-        launcher.flywheelRPMAuto(4500);
-        hood.setPosition(0);
-        drive.otosDrive(-18,-18,0);
-        launcher.turretAuto();
-        sleep(100);
-        spin(-1);
-        sleep(2000);
-        launcher.flywheelRPMAuto(1800);
-        spin(0);
+        launcher.flywheelRunUp(4500);
 
-        //grab first spike mark
-        drive.otosDrive(-35,-20,0);
-        sleep(100);
-        intake.setPower(-1);
-        drive.otosDrive(-35, 3, 0);
-        sleep(100);
-
-        //go back and shoot first spike mark
-        launcher.flywheelRPMAuto(3250);
-        drive.otosDrive(-17,-17,0);
-        launcher.turretAuto();
-        sleep(100);
-        spin(-1);
-        sleep(2000);
-        launcher.flywheelRPMAuto(1800);
-        spin(0);
-
-        // get second spike mark
-        intake.setPower(-1);
-        drive.otosDrive(-60, -20, 0);
-        sleep(100);
-
-        drive.otosDrive(-60, 0, 0);
-        sleep(100);
-
-        //go back and shoot second spike mark
-        launcher.flywheelRPMAuto(3350);
-        drive.otosDrive(-21,-19,0);
-        launcher.turretAuto();
-        sleep(100);
-        spin(-1);
-        sleep(2000);
-        launcher.stopFlywheel();
-        spin(0);
-
-        drive.otosDrive(-25,-5,0);
+        while (true) {
+            telemetry.addData("Flywheel RPM: ", launcher.getCurrentRPM());
+            telemetry.update();
+        }
 
     }
 

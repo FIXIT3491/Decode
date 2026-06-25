@@ -59,10 +59,30 @@ public class Launcher {
     private static final double BEARING_ALPHA = 0.2; // smoothing factor -> 0.1 is smoothest, 0.3 is the min
 
     // Flywheel PIDF
-    private final double kP = 1.4;
-    private final double kI = 0.0;
-    private final double kD = 0;
-    private final double kF = 14.2;
+
+    /*
+    * Typically when tuning start with I and D at 0 and only use P (ignore F)
+    * If it starts to overcorrect/ oscillate then start adding D until it is minimized
+    *  -> note that if the output becomes noisy or sluggish then you should probably dile it back
+    * Once both of those are done then slowly increase I until it reaches your target (within tolerances)
+    * F basically just speeds up the winding up process, you will need to retune the other values according to this
+    *
+    * In an ideal world the PID should only be used for feedback/ correction, F is meant to be the driver
+    *
+    *   | Symptom                                    | Likely Fix             |
+        | ------------------------------------------ | ---------------------- |
+        | Slow response                              | Increase P             |
+        | Overshoot                                  | Increase D or reduce P |
+        | Constant offset from target                | Increase I             |  
+        | Fast oscillation                           | Reduce P               |
+        | Slow oscillation                           | Reduce I               |
+        | Noisy/jittery output                       | Reduce D               |
+        | Controller works hard even at steady speed | Increase F             |
+    */
+    private final double kP = 1.4; // corrects large errors
+    private final double kI = 0.0; // small error over time (target at 1000 but remains at 980 -> slowly inches toward 1000)
+    private final double kD = 0.0; // dampening -> slows it down but prevents over shooting
+    private final double kF = 14.2; //ramp up or rather how fast it speeds up
 
     // Turret
     private double filteredBearing = 0;
@@ -408,7 +428,40 @@ public class Launcher {
         // Check if we're at target speed
         double currentRPM = getCurrentRPM();
 
-        return Math.abs(currentRPM - rpm) > 100; // 100 RPM tolerance
+        return Math.abs(currentRPM - rpm) > 50; // 100 RPM tolerance
+    }
+
+    public boolean flywheelRunUp(int targetRPM) {
+
+        if (targetRPM == 0) {
+            flywheel.setVelocity(0);
+            return false;
+        }
+
+        double currentRPM = getCurrentRPM();
+
+        int commandedRPM =
+                (currentRPM < targetRPM)
+                        ? 6000
+                        : targetRPM;
+
+        double ticksPerSecond =
+                (commandedRPM * FLYWHEEL_TICKS_PER_REV) / 60.0;
+
+        double error = currentRPM - targetRPM;
+
+        if (error > 100) {
+
+            // proportional braking
+            double brakePower = Math.min(error / 1000.0, 0.40);
+            flywheel.setPower(-brakePower);
+
+        } else {
+
+            flywheel.setVelocity(ticksPerSecond);
+        }
+
+        return currentRPM < targetRPM;
     }
 
     /*

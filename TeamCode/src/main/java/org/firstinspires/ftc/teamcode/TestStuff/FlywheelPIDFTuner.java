@@ -16,7 +16,7 @@ public class FlywheelPIDFTuner extends LinearOpMode {
     private static double kP = 1.4;
     private static double kI = 0.0;
     private static double kD = 0;
-    private static double kF = 14.2;
+    private static double kF = 19.2;
 
     // ================= TARGET RPM =================
     private static double targetRPM = 4000;
@@ -65,6 +65,24 @@ public class FlywheelPIDFTuner extends LinearOpMode {
         while (opModeIsActive()) {
 
             // ================= CONTROLS =================
+
+            if (gamepad1.dpadRightWasReleased()) {
+                kP += 0.1;
+            }
+
+            if (gamepad1.dpadLeftWasReleased()) {
+                kI += 0.1;
+            }
+
+            if (gamepad1.leftBumperWasReleased()) {
+                kP -= 0.1;
+                kD -= 0.1;
+                kI -= 0.1;
+            }
+
+            if (gamepad1.rightBumperWasReleased()) {
+                kD += 0.1;
+            }
 
             // Dpad Up/Down = RPM adjust
             if (gamepad1.dpad_up) {
