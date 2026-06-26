@@ -35,7 +35,8 @@ public class RedBasicAuto extends LinearOpMode {
         drive.resetPose(0, 0, 0);
 
         //back up and shoot preloads
-        launcher.flywheelRPMAuto(3250);
+        launcher.flywheelRPMAuto(3650);
+        hood.setPosition(0.1);
         sleep(1750);
         hood.setPosition(0);
         drive.otosDrive(18,-18,0);
@@ -54,7 +55,7 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(100);
 
         //go back and shoot first spike mark
-        launcher.flywheelRPMAuto(3250);
+        launcher.flywheelRPMAuto(3650);
         drive.otosDrive(17,-17,0);
         launcher.turretAuto();
         sleep(100);
@@ -72,7 +73,7 @@ public class RedBasicAuto extends LinearOpMode {
         sleep(100);
 
         //go back and shoot second spike mark
-        launcher.flywheelRPMAuto(3250);
+        launcher.flywheelRPMAuto(3650);
         drive.otosDrive(20,-20,0);
         launcher.turretAuto();
         sleep(100);

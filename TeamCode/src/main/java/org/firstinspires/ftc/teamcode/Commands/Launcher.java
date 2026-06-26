@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import static android.os.SystemClock.sleep;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -26,6 +29,7 @@ public class Launcher {
     private DcMotorEx flywheel;
     private CRServo turret;
     private Servo hood;
+    private VoltageSensor batteryVoltageSensor;
 
     /* ===================== VISION ===================== */
     private VisionPortal visionPortal;
@@ -39,7 +43,7 @@ public class Launcher {
     // Turret encoder
     private static final double TURRET_TICKS_PER_REV = 537.7;
     private static final double TURRET_GEAR_RATIO = 2.0;
-    private static final double FLYWHEEL_GEAR_RATIO = 1.16666667;
+    private static final double FLYWHEEL_GEAR_RATIO = (16/14); // driver / driven
     private static final double DEGREES_PER_TICK =
             360.0 / (TURRET_TICKS_PER_REV * TURRET_GEAR_RATIO);
 
@@ -73,16 +77,16 @@ public class Launcher {
         | ------------------------------------------ | ---------------------- |
         | Slow response                              | Increase P             |
         | Overshoot                                  | Increase D or reduce P |
-        | Constant offset from target                | Increase I             |  
+        | Constant offset from target                | Increase I             |
         | Fast oscillation                           | Reduce P               |
         | Slow oscillation                           | Reduce I               |
         | Noisy/jittery output                       | Reduce D               |
         | Controller works hard even at steady speed | Increase F             |
     */
-    private final double kP = 1.4; // corrects large errors
+    private final double kP = 2.5; // corrects large errors
     private final double kI = 0.0; // small error over time (target at 1000 but remains at 980 -> slowly inches toward 1000)
     private final double kD = 0.0; // dampening -> slows it down but prevents over shooting
-    private final double kF = 14.2; //ramp up or rather how fast it speeds up
+    private final double kF = 13.5; //ramp up or rather how fast it speeds up
 
     // Turret
     private double filteredBearing = 0;
@@ -91,9 +95,9 @@ public class Launcher {
 
     /* ===================== RPM PRESETS ===================== */
 
-    private static final double CLOSE_RPM = 3600; // <4 ft
-    private static final double MID_RPM   = 4000; // 4–7 ft
-    private static final double FAR_RPM   = 4600; // >7 ft
+    private static final double CLOSE_RPM = 3400; // <4 ft
+    private static final double MID_RPM   = 3800; // 4–7 ft
+    private static final double FAR_RPM   = 4300; // >7 ft
 
     /* ===================== HOOD PRESETS ===================== */
 
@@ -131,6 +135,9 @@ public class Launcher {
 
         turret = hardwareMap.get(CRServo.class, "turret");
         turret.setDirection(CRServo.Direction.FORWARD);
+        turret.setPower(0.0);
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         /*
         turret = hardwareMap.get(DcMotorEx.class, "turretMotor");
@@ -396,7 +403,7 @@ public class Launcher {
 
         flywheel.setVelocity(ticksPerSecond);
 
-        RobotLog.i("RyanTag6 actualRPM=%f targetRPM=%f", getCurrentRPM(), targetRPM);
+        RobotLog.i("RyanTag7 actualRPM=%f targetRPM=%f", getCurrentRPM(), targetRPM);
     }
 
     public void flywheelRPM (int rpm) {
@@ -563,5 +570,18 @@ public class Launcher {
 
     public void closeVision() {
         if (visionPortal != null) visionPortal.close();
+    }
+
+    private double getBatteryVoltage() {
+        double voltage = Double.POSITIVE_INFINITY;
+
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double v = sensor.getVoltage();
+            if (v > 0) {
+                voltage = Math.min(voltage, v);
+            }
+        }
+
+        return voltage;
     }
 }

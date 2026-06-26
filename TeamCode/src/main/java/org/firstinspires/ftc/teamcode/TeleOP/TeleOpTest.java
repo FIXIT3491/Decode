@@ -37,7 +37,7 @@ public class TeleOpTest extends OpMode {
         drive = new BasicMecanumDrive(hardwareMap);
         launcher = new Launcher();
         launcher.init(hardwareMap);
-        launcher.setTrackedTagId(24);
+        launcher.setTrackedTagId(-1);
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
@@ -74,16 +74,16 @@ public class TeleOpTest extends OpMode {
 
         if (isLauncherManual) {
             if (gamepad2.x) {
-                launcher.setFlywheelRPM(3600);
-                hood.setPosition(0.05);
+                launcher.setFlywheelRPM(3475);
+                hood.setPosition(0.00);
             } else if (gamepad2.y) {
-                launcher.setFlywheelRPM(4000);
-                hood.setPosition(0.13);
+                launcher.setFlywheelRPM(4050);
+                hood.setPosition(0.15);
             } else if (gamepad2.b) {
-                launcher.setFlywheelRPM(4400);
-                hood.setPosition(0.20);
+                launcher.setFlywheelRPM(4700);
+                hood.setPosition(0.25);
             } else {
-                launcher.setFlywheelRPM(1000);
+                launcher.setFlywheelRPM(1750);
                 hood.setPosition(0.1);
             }
         } else {
@@ -92,7 +92,7 @@ public class TeleOpTest extends OpMode {
             } else if (gamepad2.a) {
                 launcher.setFlywheelRPM(3000);
             } else {
-                launcher.setFlywheelRPM(1000);
+                launcher.setFlywheelRPM(1750);
             }
         }
 
