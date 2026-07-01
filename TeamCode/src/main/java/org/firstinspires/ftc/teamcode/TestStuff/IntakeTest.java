@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Commands.BasicMecanumDrive;
 import org.firstinspires.ftc.teamcode.Commands.WheelRotation;
 
+@Disabled
 @TeleOp(name = "Intake Test (Color Sensor)", group = "Test")
 public class IntakeTest extends OpMode {
 

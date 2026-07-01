@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TestStuff;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
+@Disabled
 @TeleOp(name = "AprilTag Flywheel TeleOp", group = "Test")
 public class WebcamAutoFlywheelTest extends LinearOpMode {
 

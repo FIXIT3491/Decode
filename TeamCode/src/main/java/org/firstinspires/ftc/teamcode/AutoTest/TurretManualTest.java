@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode.TestStuff;
+package org.firstinspires.ftc.teamcode.AutoTest;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+@Disabled
 @Autonomous(name="TurretManualTest", group="Test")
 public class TurretManualTest extends LinearOpMode {
 

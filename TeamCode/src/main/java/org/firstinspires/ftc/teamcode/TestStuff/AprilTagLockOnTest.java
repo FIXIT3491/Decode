@@ -13,6 +13,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
+@Disabled
 @TeleOp(name = "AprilTag Lock-On Test", group = "Test")
 public class AprilTagLockOnTest extends LinearOpMode {
 

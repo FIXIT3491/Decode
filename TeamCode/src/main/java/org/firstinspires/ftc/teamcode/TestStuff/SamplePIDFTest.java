@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TestStuff;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Commands.Launcher;
 
+@Disabled
 @TeleOp(name = "Flywheel PIDF Sample", group = "Tuning")
 public class SamplePIDFTest extends LinearOpMode {
 

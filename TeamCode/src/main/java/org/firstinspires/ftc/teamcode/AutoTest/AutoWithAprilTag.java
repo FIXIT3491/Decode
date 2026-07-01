@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.AutoTest;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Commands.AprilTag;
 import org.firstinspires.ftc.teamcode.Commands.AprilTagGlobals;
 
+@Disabled
 @Autonomous
 public class AutoWithAprilTag extends LinearOpMode {
 
